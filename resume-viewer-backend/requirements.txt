@@ -1,0 +1,12 @@
+fastapi==0.115.0
+uvicorn==0.30.6
+python-multipart==0.0.9
+pydantic==2.8.2
+pydantic-settings==2.4.0
+pdfplumber==0.11.4
+nltk==3.9.1
+regex>=2025.0.0
+
+# Optional (used only if you later enable LLM)
+# openai==1.40.6
+
