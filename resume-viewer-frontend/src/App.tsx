@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { analyzeResume } from './api/client'
 import type { AnalyzeResponse } from './api/types'
 
@@ -12,6 +12,18 @@ function scoreLabel(score: number) {
   return { label: 'Needs improvement', color: 'var(--bad)' }
 }
 
+function downloadText(filename: string, content: string) {
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  URL.revokeObjectURL(url)
+}
+
 export default function App() {
   const [file, setFile] = useState<File | null>(null)
   const [jobDescription, setJobDescription] = useState('')
@@ -19,6 +31,35 @@ export default function App() {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<AnalyzeResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
+
+  const [loadingMsgIndex, setLoadingMsgIndex] = useState(0)
+  const loadingMessages = useMemo(
+    () => [
+      'Reading your resume...',
+      'Calculating ATS score...',
+      'Gemini is rewriting your resume...',
+      'Preparing recommendations...',
+    ],
+    []
+  )
+
+  const [rewriteStatus, setRewriteStatus] = useState<'idle' | 'rewriting'>('idle')
+  const [copyState, setCopyState] = useState<'idle' | 'copied'>('idle')
+
+  useEffect(() => {
+    if (!loading) return
+    setLoadingMsgIndex(0)
+    const t = window.setInterval(() => {
+      setLoadingMsgIndex((i) => (i + 1) % loadingMessages.length)
+    }, 2400)
+    return () => window.clearInterval(t)
+  }, [loading, loadingMessages.length])
+
+  useEffect(() => {
+    if (copyState !== 'copied') return
+    const t = window.setTimeout(() => setCopyState('idle'), 1700)
+    return () => window.clearTimeout(t)
+  }, [copyState])
 
   const missingSkills = useMemo(() => {
     if (!result) return [] as string[]
@@ -35,6 +76,7 @@ export default function App() {
       return
     }
 
+    setRewriteStatus('rewriting')
     setLoading(true)
     try {
       const res = await analyzeResume({
@@ -48,6 +90,7 @@ export default function App() {
       setError(msg)
     } finally {
       setLoading(false)
+      setRewriteStatus('idle')
     }
   }
 
@@ -56,13 +99,28 @@ export default function App() {
   const progressWidth = clamp(ats, 0, 100)
 
   const signals = result?.ats_score.signals
+  const coloredPills = missingSkills.map((s, i) => ({
+    text: s,
+    color:
+      i % 4 === 0
+        ? 'rgba(34,211,238,0.22)'
+        : i % 4 === 1
+          ? 'rgba(167,139,250,0.22)'
+          : i % 4 === 2
+            ? 'rgba(52,211,153,0.22)'
+            : 'rgba(251,191,36,0.22)',
+  }))
+
 
   return (
     <div className="container">
       {loading ? (
         <div className="loadingOverlay" aria-live="polite">
-          <div className="spinner">
-            <div className="spinnerInner" />
+          <div className="loadingCard">
+            <div className="spinner" aria-hidden="true">
+              <div className="spinnerInner" />
+            </div>
+            <div className="loadingText">{loadingMessages[loadingMsgIndex]}</div>
           </div>
         </div>
       ) : null}
@@ -136,15 +194,48 @@ export default function App() {
           <div className="card results">
             <div className="cardTitle">ATS snapshot</div>
 
-            <div className="progressWrap">
-              <div className="progressTop">
-                <div className="progressValue">{ats}/100</div>
-                <div className="progressMeta" style={{ color: label.color }}>
-                  {label.label}
+            <div className="atsGaugeWrap">
+              <div className="atsGauge" aria-label={`ATS score ${ats} out of 100`} role="img">
+                {(() => {
+                  const radius = 44;
+                  const circumference = 2 * Math.PI * radius;
+                  const dashOffset = circumference * (1 - progressWidth / 100);
+                  return (
+                    <svg width="108" height="108" viewBox="0 0 108 108">
+                      <circle
+                        className="atsGaugeTrack"
+                        cx="54"
+                        cy="54"
+                        r={radius}
+                        strokeWidth="10"
+                        fill="none"
+                      />
+                      <circle
+                        className="atsGaugeBar"
+                        cx="54"
+                        cy="54"
+                        r={radius}
+                        strokeWidth="10"
+                        fill="none"
+                        stroke="rgba(124,58,237,0.95)"
+                        strokeDasharray={circumference}
+                        strokeDashoffset={dashOffset}
+                        style={{ transformOrigin: '54px 54px' }}
+                      />
+                    </svg>
+                  )
+                })()}
+                <div className="atsGaugeCenter">
+                  <div>
+                    <div className="val">{ats}</div>
+                    <div className="unit">/100</div>
+                  </div>
                 </div>
               </div>
-              <div className="progressBar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={ats}>
-                <div className="progressFill" style={{ width: `${progressWidth}%` }} />
+
+              <div className="atsGaugeMeta">
+                <div className="label" style={{ color: label.color }}>{label.label}</div>
+                <div className="sub">ATS score is based on detected resume signals and keyword coverage.</div>
               </div>
             </div>
 
@@ -204,9 +295,9 @@ export default function App() {
               <div className="muted2">Top matches not detected in the resume</div>
               {missingSkills.length ? (
                 <div className="pillRow">
-                  {missingSkills.map((s) => (
-                    <div className="pill" key={s}>
-                      {s}
+                  {coloredPills.map((p) => (
+                    <div className="chipSkill" key={p.text} style={{ borderColor: p.color, background: `linear-gradient(135deg, ${p.color}, rgba(124,58,237,0.04))` }}>
+                      {p.text}
                     </div>
                   ))}
                 </div>
@@ -271,17 +362,52 @@ export default function App() {
           </div>
 
           <div className="card" style={{ gridColumn: '1 / -1' }}>
-  <div className="cardTitle">🤖 AI Resume Rewrite</div>
+            <div className="cardTitle">🟣 Gemini AI Resume Rewrite</div>
 
-  <textarea
-    className="textarea"
-    value={result.rewritten_resume}
-    readOnly
-    rows={10}
-  />
-</div>
+            <div className="rewriteTopRow">
+              <div className="rewriteStatus">
+                {rewriteStatus === 'rewriting' ? (
+                  <span className="rewriteStatusText">Gemini is rewriting your resume…</span>
+                ) : (
+                  <span className="rewriteStatusText">Get a stronger, ATS-friendly version.</span>
+                )}
+              </div>
+              <div className="rewriteActions">
+                <button
+                  type="button"
+                  className="buttonSmall"
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(result.rewritten_resume)
+                      setCopyState('copied')
+                    } catch {
+                      // Fallback: select+copy is hard in textarea; ignore.
+                    }
+                  }}
+                  disabled={loading}
+                >
+                  {copyState === 'copied' ? 'Copied!' : 'Copy'}
+                </button>
 
-       
+                <button
+                  type="button"
+                  className="buttonSmall"
+                  onClick={() => downloadText('ai-resume-rewrite.txt', result.rewritten_resume)}
+                  disabled={loading}
+                >
+                  Download .txt
+                </button>
+              </div>
+            </div>
+
+            <textarea
+              className="textarea rewriteTextarea"
+              value={result.rewritten_resume}
+              readOnly
+              rows={10}
+            />
+          </div>
+
         </div>
       ) : null}
     </div>

@@ -395,12 +395,78 @@ a { color: inherit; text-decoration: none; }
    Additions: tables/lists, progress, charts, chips, loading
    ───────────────────────────────────────────────────────────── */
 
-/* ATS progress */
+/* ATS progress (legacy linear styles) */
 .progressWrap {
   margin-top: 6px;
   display: grid;
   gap: 10px;
 }
+
+/* Circular ATS gauge */
+.atsGaugeWrap {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 6px;
+}
+
+.atsGauge {
+  width: 108px;
+  height: 108px;
+  position: relative;
+}
+
+.atsGauge svg {
+  transform: rotate(-90deg);
+}
+
+.atsGaugeTrack {
+  stroke: rgba(168,130,255,0.18);
+}
+
+.atsGaugeBar {
+  stroke-linecap: round;
+  transition: stroke-dashoffset 900ms cubic-bezier(.2,.9,.2,1);
+  filter: drop-shadow(0 0 10px rgba(124,58,237,0.18));
+}
+
+.atsGaugeCenter {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  text-align: center;
+}
+
+.atsGaugeCenter .val {
+  font-weight: 950;
+  font-size: 22px;
+  letter-spacing: -0.04em;
+}
+
+.atsGaugeCenter .unit {
+  font-weight: 800;
+  color: var(--t3);
+  font-size: 11px;
+  margin-top: -2px;
+}
+
+.atsGaugeMeta {
+  flex: 1;
+}
+
+.atsGaugeMeta .label {
+  font-weight: 900;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.atsGaugeMeta .sub {
+  color: var(--t3);
+  font-size: 12px;
+  font-weight: 600;
+}
+
 
 .progressTop {
   display: flex;
@@ -549,6 +615,27 @@ a { color: inherit; text-decoration: none; }
   font-size: 12px;
 }
 
+.chipSkill {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(168,130,255,0.22);
+  color: rgba(241,238,255,0.94);
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  position: relative;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+}
+
+.chipSkill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+
 /* Charts */
 .chart {
   margin-top: 8px;
@@ -619,6 +706,26 @@ a { color: inherit; text-decoration: none; }
   backdrop-filter: blur(8px);
 }
 
+.loadingCard {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 18px;
+  border-radius: var(--r-xl);
+  border: 1px solid rgba(168,130,255,0.22);
+  background: rgba(18,10,35,0.66);
+  box-shadow: var(--shadow-lg);
+  animation: fadeInUp 220ms ease both;
+}
+
+.loadingText {
+  font-weight: 800;
+  color: var(--t1);
+  font-size: 14px;
+  letter-spacing: -0.01em;
+}
+
 .spinner {
   width: 72px;
   height: 72px;
@@ -641,7 +748,71 @@ a { color: inherit; text-decoration: none; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Rewrite card */
+.rewriteTopRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.rewriteStatus {
+  color: var(--t2);
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.rewriteStatusText {
+  color: rgba(241,238,255,0.95);
+}
+
+.rewriteActions {
+  display: flex;
+  gap: 10px;
+}
+
+.buttonSmall {
+  padding: 10px 14px;
+  border-radius: var(--r-md);
+  border: 1px solid rgba(168,130,255,0.22);
+  background: rgba(124,58,237,0.08);
+  color: rgba(241,238,255,0.95);
+  font-weight: 900;
+  font-size: 13px;
+  cursor: pointer;
+  transition: transform 150ms, background 150ms, border-color 150ms;
+  white-space: nowrap;
+}
+
+.buttonSmall:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(124,58,237,0.55);
+  background: rgba(124,58,237,0.12);
+}
+
+.buttonSmall:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.rewriteTextarea {
+  min-height: 260px;
+}
+
+/* Fade-in for results */
+.results {
+  animation: fadeInUp 260ms ease both;
+}
+
 /* Lists & links in results */
+
 .list {
   margin: 12px 0 0;
   padding-left: 18px;
