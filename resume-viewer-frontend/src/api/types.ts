@@ -10,9 +10,21 @@ export type AnalyzeResponse = {
       keyword_boost: number
     }
   }
-  missing_skills: string[]
-  grammar_suggestions: Array<{ type: string; issue: string; suggestion: string }>
-  stronger_wording: Array<{ original_pattern?: string; suggested_rewrite: string }>
-  summary: string
-}
 
+  missing_skills: string[]
+
+  grammar_suggestions: Array<{
+    type: string
+    issue: string
+    suggestion: string
+  }>
+
+  stronger_wording: Array<{
+    original_pattern?: string
+    suggested_rewrite: string
+  }>
+
+  summary: string
+
+  rewritten_resume: string
+}

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from app.services.gemini import rewrite_resume_text
+
 from dataclasses import dataclass
 import re
 from typing import Any
@@ -261,6 +263,8 @@ def analyze_resume_pdf(uploaded_pdf, job_description: str | None = None, target_
     grammar = _grammar_suggestions(resume_text)
     wording = _stronger_wording(resume_text)
 
+    rewritten_resume = rewrite_resume_text(resume_text)
+
     missing_preview = ", ".join(missing[:8]) if missing else "None detected"
     summary = (
         f"ATS score: {ats['score']}/100. "
@@ -282,5 +286,6 @@ def analyze_resume_pdf(uploaded_pdf, job_description: str | None = None, target_
         "grammar_suggestions": result.grammar_suggestions,
         "stronger_wording": result.stronger_wording,
         "summary": result.summary,
+        "rewritten_resume": rewritten_resume,
     }
 
