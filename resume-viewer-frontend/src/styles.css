@@ -49,6 +49,7 @@ body {
   line-height: 1.6;
   color: var(--t1);
   background-color: var(--bg-deep);
+  overflow-x: hidden;
   background-image:
     radial-gradient(ellipse 80vw 60vh at 20% -10%, rgba(124,58,237,0.28) 0%, transparent 60%),
     radial-gradient(ellipse 60vw 50vh at 85% 10%,  rgba(34,211,238,0.12) 0%, transparent 55%),
@@ -61,11 +62,321 @@ body {
 a { color: inherit; text-decoration: none; }
 
 /* ── Layout ─────────────────────────────── */
+.appShell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 0;
+}
+
+.sidebar {
+  padding: 22px 12px;
+  width: 220px;
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100vh;
+  background: rgba(18,10,35,0.55);
+  border-right: 2px solid rgba(168,130,255,0.18);
+  backdrop-filter: blur(16px);
+  overflow: auto;
+  transition: width 180ms ease, padding 180ms ease;
+}
+
+
+.appShell {
+  grid-template-columns: 70px 1fr;
+  transition: grid-template-columns 180ms ease;
+}
+
+/* Hovering sidebar expands it; leaving collapses it back */
+.appShell:has(.sidebar:hover) {
+  grid-template-columns: 220px 1fr;
+}
+
+.sidebar {
+  transition: width 180ms ease, padding 180ms ease;
+  width: 70px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.sidebar:hover {
+  width: 220px;
+  padding-left: 18px;
+  padding-right: 18px;
+}
+
+.sidebar:not(.mobileOpen):not(:hover) .sidebarTitle,
+.sidebar:not(.mobileOpen):not(:hover) .sidebarItemText,
+.sidebar:not(.mobileOpen):not(:hover) .sidebarHintTitle,
+.sidebar:not(.mobileOpen):not(:hover) .sidebarHintText {
+  display: none;
+}
+
+
+
+
+.sidebarTop {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.sidebarLogo {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--p500) 0%, var(--cyan) 100%);
+  box-shadow: var(--glow-p), 0 10px 30px rgba(0,0,0,0.35);
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebarLogo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.sidebarLogoText {
+  font-weight: 950;
+  color: white;
+  letter-spacing: -0.03em;
+  font-size: 13px;
+  position: relative;
+}
+
+.sidebarTitle {
+  font-weight: 950;
+  color: rgba(241,238,255,0.95);
+  font-size: 14px;
+}
+
+.sidebarNav {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+  
+}
+
+.sidebarItem {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(168,130,255,0.18);
+  background: rgba(124,58,237,0.06);
+  color: rgba(241,238,255,0.92);
+  border-radius: 16px;
+  padding: 8px 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  transition: transform 150ms ease, border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+}
+
+.sidebarItem:hover {
+  transform: translateY(-1px);
+  border-color: rgba(124,58,237,0.55);
+  background: rgba(124,58,237,0.10);
+  box-shadow: 0 12px 34px rgba(0,0,0,0.30);
+}
+
+.sidebarItem.active {
+  border-color: rgba(124,58,237,0.75);
+  background: linear-gradient(135deg, rgba(124,58,237,0.24), rgba(34,211,238,0.10));
+  box-shadow: 0 0 0 4px rgba(124,58,237,0.12), var(--glow-p);
+}
+
+.sidebarIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: none;
+  font-size: 15px;
+}
+
+.sidebarItemText {
+  font-weight: 900;
+  font-size: 12px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.sidebarFooter {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(168,130,255,0.18);
+}
+
+.sidebarHintTitle {
+  font-weight: 950;
+  color: rgba(241,238,255,0.92);
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.sidebarHintText {
+  color: var(--t3);
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.mainPane {
+  padding: 28px 20px 60px;
+}
+
+.hamburger {
+  display: none;
+  border: none;
+  background: rgba(255,255,255,0.06);
+  color: var(--t1);
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 180ms ease, transform 180ms ease;
+}
+
+.hamburger:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+.hamburgerLine {
+  display: block;
+  width: 12px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--t1);
+  transition: transform 180ms ease, opacity 180ms ease;
+}
+
+@media (max-width: 860px) {
+  .appShell {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: fixed;
+    inset: 0 auto auto 0;
+    width: min(320px, 100%);
+    max-width: 100%;
+    height: 100vh;
+    padding: 20px 18px;
+    background: rgba(18,10,35,0.96);
+    transform: translateX(-110%);
+    transition: transform 220ms ease, width 220ms ease, padding 220ms ease;
+    z-index: 1001;
+    border-right: none;
+    overflow-y: auto;
+  }
+  .sidebar.mobileOpen {
+    transform: translateX(0);
+  }
+  .sidebar.mobileOpen .sidebarTitle,
+  .sidebar.mobileOpen .sidebarItemText,
+  .sidebar.mobileOpen .sidebarHintTitle,
+  .sidebar.mobileOpen .sidebarHintText {
+    display: block;
+  }
+  .sidebarOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.48);
+    z-index: 1000;
+  }
+  .mainPane {
+    padding: 16px 14px 40px;
+  }
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .topRight {
+    align-items: flex-start;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .card {
+    padding: 18px;
+  }
+  .rewriteTopRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .rewriteActions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  .hamburger {
+    display: inline-flex;
+  }
+  .hamburger {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+  }
+  .rewriteTextarea {
+    min-height: 320px;
+  }
+}
+
+@media (max-width: 640px) {
+  .header {
+    gap: 14px;
+  }
+  .brand {
+    gap: 12px;
+  }
+  .titleWrap h1 {
+    font-size: 22px;
+  }
+  .subtitle {
+    max-width: 100%;
+  }
+  .chip {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .progressTop {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  .progressValue {
+    font-size: 32px;
+  }
+  .signal {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .miniBar {
+    grid-template-columns: 1fr 56px;
+  }
+}
+
+/* Back-compat (used by older markup) */
 .container {
   max-width: 1140px;
   margin: 0 auto;
   padding: 28px 20px 60px;
 }
+
 
 /* ── Header ─────────────────────────────── */
 .header {
@@ -175,8 +486,13 @@ a { color: inherit; text-decoration: none; }
   gap: 20px;
 }
 
+.grid.columns2 {
+  grid-template-columns: 1fr 1fr;
+}
+
 @media (max-width: 860px) {
   .grid { grid-template-columns: 1fr; }
+  .grid.columns2 { grid-template-columns: 1fr; }
   .topRight { align-items: flex-start; }
   .header { flex-direction: column; }
 }
@@ -507,6 +823,11 @@ a { color: inherit; text-decoration: none; }
 /* Sections */
 .section {
   margin-top: 18px;
+
+}
+.section li {
+  list-style-type: '🔸';
+  
 }
 
 .section h3 {
@@ -803,7 +1124,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 .rewriteTextarea {
-  min-height: 260px;
+  min-height: 500px;
 }
 
 /* Fade-in for results */

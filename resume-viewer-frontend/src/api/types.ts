@@ -11,6 +11,8 @@ export type AnalyzeResponse = {
     }
   }
 
+  resume_match: number
+  matched_skills: string[]
   missing_skills: string[]
 
   grammar_suggestions: Array<{
@@ -27,4 +29,5 @@ export type AnalyzeResponse = {
   summary: string
 
   rewritten_resume: string
+  ai_suggestions?: string[]
 }

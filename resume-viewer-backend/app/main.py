@@ -7,8 +7,9 @@ app = FastAPI(title="AI Resume Viewer API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000", "*"],
-    allow_credentials=True,
+    # Allow local dev origins; avoid using '*' together with credentials.
+    allow_origins=["http://localhost:5173", "http://localhost:3000", "http://192.168.100.91:5173"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

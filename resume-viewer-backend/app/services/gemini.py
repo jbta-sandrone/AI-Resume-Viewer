@@ -1,4 +1,5 @@
 import os
+import json
 
 from dotenv import load_dotenv
 from google import genai
@@ -12,27 +13,30 @@ client = genai.Client(
 )
 
 
-def rewrite_resume_text(text: str) -> str:
-    """
-    Rewrite resume text to sound more professional and ATS-friendly.
-    """
-
+def rewrite_resume_with_insights(resume_text: str):
     prompt = f"""
-You are an expert resume writer.
+You are an expert ATS resume writer.
 
-Rewrite the following resume text.
+Rewrite the following resume professionally.
 
-Rules:
-- Keep the same meaning.
-- Improve grammar.
-- Make it ATS-friendly.
-- Use strong action verbs.
-- Do not invent experience.
-- Return only the rewritten text.
+After rewriting, provide exactly 5 improvement suggestions.
+
+Return ONLY valid JSON in this format:
+
+{{
+  "rewritten_resume": "...",
+  "suggestions": [
+    "...",
+    "...",
+    "...",
+    "...",
+    "..."
+  ]
+}}
 
 Resume:
 
-{text}
+{resume_text}
 """
 
     response = client.models.generate_content(
@@ -40,4 +44,15 @@ Resume:
         contents=prompt,
     )
 
-    return response.text
+    text = response.text.strip()
+
+    # Remove markdown code fences if present
+    text = text.replace("```json", "").replace("```", "").strip()
+
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        return {
+            "rewritten_resume": text,
+            "suggestions": []
+        }

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from app.services.gemini import rewrite_resume_text
+from app.services.gemini import rewrite_resume_with_insights
 
 from dataclasses import dataclass
 import re
@@ -237,13 +237,19 @@ def _stronger_wording(resume_text: str) -> list[dict[str, str]]:
 @dataclass
 class AnalysisResult:
     ats_score: dict[str, Any]
+    resume_match: int
+    matched_skills: list[str]
     missing_skills: list[str]
     grammar_suggestions: list[dict[str, str]]
     stronger_wording: list[dict[str, str]]
     summary: str
 
-
-def analyze_resume_pdf(uploaded_pdf, job_description: str | None = None, target_skills: list[str] | None = None):
+def analyze_resume_pdf(
+    uploaded_pdf,
+    job_description: str | None = None,
+    target_skills: list[str] | None = None,
+    run_rewrite: bool = False,
+):
     resume_text = _extract_pdf_text(uploaded_pdf)
 
     # Determine target skills
@@ -259,13 +265,34 @@ def analyze_resume_pdf(uploaded_pdf, job_description: str | None = None, target_
     present = _extract_present_skills(resume_text, targets)
     missing = [s for s in targets if s not in present]
 
+    matched = sorted(list(present))
+
+    if targets:
+        resume_match = round((len(matched) / len(targets)) * 100)
+    else:
+        resume_match = 100
+
     ats = _ats_score(resume_text)
     grammar = _grammar_suggestions(resume_text)
     wording = _stronger_wording(resume_text)
 
-    rewritten_resume = rewrite_resume_text(resume_text)
+    rewritten_resume = ""
+    ai_suggestions: list[str] = []
+
+    if run_rewrite:
+        try:
+            rewrite_data = rewrite_resume_with_insights(resume_text)
+
+            rewritten_resume = rewrite_data.get("rewritten_resume", "")
+            ai_suggestions = rewrite_data.get("suggestions", [])
+
+        except Exception as e:
+            print("Gemini error:", e)
+            rewritten_resume = ""
+            ai_suggestions = []
 
     missing_preview = ", ".join(missing[:8]) if missing else "None detected"
+
     summary = (
         f"ATS score: {ats['score']}/100. "
         f"Missing skills (top matches): {missing_preview}. "
@@ -274,7 +301,9 @@ def analyze_resume_pdf(uploaded_pdf, job_description: str | None = None, target_
 
     result = AnalysisResult(
         ats_score=ats,
-        missing_skills=missing[:20],
+        resume_match=resume_match,
+        matched_skills=matched,
+        missing_skills=missing,
         grammar_suggestions=grammar,
         stronger_wording=wording,
         summary=summary,
@@ -282,10 +311,13 @@ def analyze_resume_pdf(uploaded_pdf, job_description: str | None = None, target_
 
     return {
         "ats_score": result.ats_score,
+        "resume_match": result.resume_match,
+        "matched_skills": result.matched_skills,
         "missing_skills": result.missing_skills,
         "grammar_suggestions": result.grammar_suggestions,
         "stronger_wording": result.stronger_wording,
         "summary": result.summary,
         "rewritten_resume": rewritten_resume,
+        "ai_suggestions": ai_suggestions,
     }
 

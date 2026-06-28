@@ -6,11 +6,13 @@ export async function analyzeResume(input: {
   file: File
   jobDescription?: string
   targetSkills?: string
+  rewrite?: boolean
 }): Promise<AnalyzeResponse> {
   const form = new FormData()
   form.append('file', input.file)
   if (input.jobDescription) form.append('job_description', input.jobDescription)
   if (input.targetSkills) form.append('target_skills', input.targetSkills)
+  if (input.rewrite) form.append('rewrite', 'true')
 
   const res = await fetch(`${VITE_API_BASE_URL}/api/analyze`, {
     method: 'POST',

@@ -10,6 +10,7 @@ def analyze(
     file: UploadFile = File(...),
     job_description: str | None = Form(None),
     target_skills: str | None = Form(None),
+    rewrite: bool = Form(False),
 ):
     # target_skills can be comma-separated
     target_skills_list = None
@@ -20,5 +21,6 @@ def analyze(
         uploaded_pdf=file,
         job_description=job_description,
         target_skills=target_skills_list,
+        run_rewrite=rewrite,
     )
 
