@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { analyzeResume } from './api/client'
+import { analyzeResume, generateCoverLetter } from './api/client'
 import type { AnalyzeResponse } from './api/types'
 
 function clamp(n: number, min: number, max: number) {
@@ -12,18 +12,6 @@ function scoreLabel(score: number) {
   return { label: 'Needs improvement', color: 'var(--bad)' }
 }
 
-function downloadText(filename: string, content: string) {
-  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = filename
-  document.body.appendChild(a)
-  a.click()
-  a.remove()
-  URL.revokeObjectURL(url)
-}
-
 function escapeHtml(s: string) {
   return s
     .replaceAll('&', '&amp;')
@@ -33,13 +21,13 @@ function escapeHtml(s: string) {
     .replaceAll("'", '&#39;')
 }
 
-function downloadPdf(_filename: string, content: string) {
+function downloadPdf(_filename: string, content: string, title = 'AI Resume Rewrite') {
   const safeContent = escapeHtml(content ?? '')
   const html = `<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>AI Resume Rewrite</title>
+    <title>${title}</title>
     <style>
       body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif; padding: 24px; white-space: pre-wrap; line-height: 1.5; }
       .wrap { font-size: 12.5px; }
@@ -72,35 +60,43 @@ function downloadPdf(_filename: string, content: string) {
   setTimeout(() => win.print(), 200)
 }
 
-
-type Mode = 'analyzer' | 'rewriter'
-
+type Mode = 'analyzer' | 'rewriter' | 'coverLetter'
 
 export default function App() {
   const [activeMode, setActiveMode] = useState<Mode>('analyzer')
 
-  // Analyzer state
   const [file, setFile] = useState<File | null>(null)
   const [jobDescription, setJobDescription] = useState('')
   const [targetSkills, setTargetSkills] = useState('')
 
-  // Rewriter state
   const [rewriteFile, setRewriteFile] = useState<File | null>(null)
+  const [coverLetterFile, setCoverLetterFile] = useState<File | null>(null)
+  const [coverLetterPosition, setCoverLetterPosition] = useState('')
+  const [coverLetterJobDescription, setCoverLetterJobDescription] = useState('')
+  const [coverLetterCompanyName, setCoverLetterCompanyName] = useState('')
+  const [coverLetterOutput, setCoverLetterOutput] = useState('')
 
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<AnalyzeResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const [loadingMsgIndex, setLoadingMsgIndex] = useState(0)
-  const loadingMessages = useMemo(
-    () => [
+  const loadingMessages = useMemo(() => {
+    if (activeMode === 'coverLetter') {
+      return [
+        '📝 Extracting your resume text...',
+        '🎯 Tailoring the letter to the role...',
+        '✦ Gemini is composing your cover letter...',
+      ]
+    }
+
+    return [
       '📑 Reading your resume...',
       activeMode === 'analyzer' ? '🎯 Calculating ATS score...' : '✦ Preparing rewrite...',
       '🛠️ Generating recommendations...',
       '✦ Gemini is rewriting your resume...',
-    ],
-    [activeMode]
-  )
+    ]
+  }, [activeMode])
 
   const [rewriteStatus, setRewriteStatus] = useState<'idle' | 'rewriting'>('idle')
   const [copyState, setCopyState] = useState<'idle' | 'copied'>('idle')
@@ -126,6 +122,45 @@ export default function App() {
     return result.missing_skills ?? []
   }, [result])
 
+  function switchMode(nextMode: Mode) {
+    setActiveMode(nextMode)
+    setError(null)
+    setCopyState('idle')
+    setResult(null)
+    setCoverLetterOutput('')
+    setMobileMenuOpen(false)
+  }
+
+  function clearAnalyzerState() {
+    setFile(null)
+    setJobDescription('')
+    setTargetSkills('')
+    setResult(null)
+    setError(null)
+    setCopyState('idle')
+    setLoading(false)
+  }
+
+  function clearRewriterState() {
+    setRewriteFile(null)
+    setResult(null)
+    setError(null)
+    setRewriteStatus('idle')
+    setCopyState('idle')
+    setLoading(false)
+  }
+
+  function clearCoverLetterState() {
+    setCoverLetterFile(null)
+    setCoverLetterPosition('')
+    setCoverLetterJobDescription('')
+    setCoverLetterCompanyName('')
+    setCoverLetterOutput('')
+    setError(null)
+    setCopyState('idle')
+    setLoading(false)
+  }
+
   async function onAnalyze(e: React.FormEvent) {
     e.preventDefault()
 
@@ -146,7 +181,6 @@ export default function App() {
         jobDescription: jobDescription.trim() ? jobDescription.trim() : undefined,
         targetSkills: targetSkills.trim() ? targetSkills.trim() : undefined,
       })
-      // Ensure rewrite is never displayed in analyzer mode.
       setResult({ ...res, rewritten_resume: '' })
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Analysis failed'
@@ -156,10 +190,7 @@ export default function App() {
     }
   }
 
-
-
   async function onRewrite() {
-    // Ensure analyzer cannot function while rewriter is active
     if (activeMode !== 'rewriter') return
 
     setError(null)
@@ -173,8 +204,6 @@ export default function App() {
     setRewriteStatus('rewriting')
     setLoading(true)
     try {
-      // Backend currently returns both analysis + rewritten_resume.
-      // Rewriter mode will only display the rewrite output.
       const res = await analyzeResume({ file: rewriteFile, rewrite: true })
       setResult(res)
     } catch (err) {
@@ -186,11 +215,58 @@ export default function App() {
     }
   }
 
+  async function requestCoverLetterGeneration() {
+    if (activeMode !== 'coverLetter') return
+
+    setError(null)
+    setCoverLetterOutput('')
+
+    if (!coverLetterFile) {
+      setError('Upload a PDF resume first.')
+      return
+    }
+
+    if (!coverLetterPosition.trim()) {
+      setError('Enter the position title.')
+      return
+    }
+
+    if (!coverLetterJobDescription.trim()) {
+      setError('Paste the job description.')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const res = await generateCoverLetter({
+        file: coverLetterFile,
+        position: coverLetterPosition.trim(),
+        jobDescription: coverLetterJobDescription.trim(),
+        companyName: coverLetterCompanyName.trim() || undefined,
+      })
+      setCoverLetterOutput(res.cover_letter ?? '')
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Cover letter generation failed'
+      setError(msg)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function onGenerateCoverLetter(e: React.FormEvent) {
+    e.preventDefault()
+    await requestCoverLetterGeneration()
+  }
+
+  async function onRegenerateCoverLetter() {
+    await requestCoverLetterGeneration()
+  }
 
   const ats = result?.ats_score.score ?? 0
   const label = scoreLabel(ats)
   const progressWidth = clamp(ats, 0, 100)
   const hasRewriteText = Boolean(result?.rewritten_resume?.trim())
+  const hasCoverLetterText = Boolean(coverLetterOutput.trim())
 
   const signals = result?.ats_score.signals
   const aiSuggestions = result?.ai_suggestions ?? []
@@ -234,14 +310,7 @@ export default function App() {
           <button
             type="button"
             className={`sidebarItem ${activeMode === 'analyzer' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveMode('analyzer')
-              setError(null)
-              setCopyState('idle')
-              setResult(null)
-              setMobileMenuOpen(false)
-
-            }}
+            onClick={() => switchMode('analyzer')}
           >
             <span className="sidebarIcon">📑</span>
             <span className="sidebarItemText">Resume Analyzer</span>
@@ -250,19 +319,19 @@ export default function App() {
           <button
             type="button"
             className={`sidebarItem ${activeMode === 'rewriter' ? 'active' : ''}`}
-            onClick={() => {
-              setActiveMode('rewriter')
-              setError(null)
-              setCopyState('idle')
-
-
-              setResult(null)
-              setMobileMenuOpen(false)
-
-            }}
+            onClick={() => switchMode('rewriter')}
           >
             <span className="sidebarIcon">✦</span>
             <span className="sidebarItemText">Resume Rewriter</span>
+          </button>
+
+          <button
+            type="button"
+            className={`sidebarItem ${activeMode === 'coverLetter' ? 'active' : ''}`}
+            onClick={() => switchMode('coverLetter')}
+          >
+            <span className="sidebarIcon">✉️</span>
+            <span className="sidebarItemText">Cover Letter Generator</span>
           </button>
         </nav>
 
@@ -281,7 +350,9 @@ export default function App() {
               <p className="subtitle">
                 {activeMode === 'analyzer'
                   ? 'Upload a PDF resume to get ATS score, missing skills, grammar/formatting suggestions, and stronger wording.'
-                  : 'Upload a PDF resume and generate a stronger, ATS-friendly rewrite.'}
+                  : activeMode === 'rewriter'
+                    ? 'Upload a PDF resume and generate a stronger, ATS-friendly rewrite.'
+                    : 'Create a tailored cover letter from your resume and a specific job description.'}
               </p>
             </div>
           </div>
@@ -304,7 +375,9 @@ export default function App() {
                   : 'Rewrite ready'
                 : activeMode === 'analyzer'
                   ? 'Ready for analysis'
-                  : 'Ready to rewrite'}
+                  : activeMode === 'rewriter'
+                    ? 'Ready to rewrite'
+                    : 'Ready for cover letter'}
             </div>
           </div>
         </div>
@@ -322,7 +395,7 @@ export default function App() {
                   tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
-                      ; (e.currentTarget as HTMLDivElement).click()
+                      ;(e.currentTarget as HTMLDivElement).click()
                     }
                   }}
                 >
@@ -353,9 +426,14 @@ export default function App() {
                   placeholder="e.g. react, fastapi, python, sql"
                 />
 
-                <button className="button" type="submit" disabled={loading}>
-                  {loading ? 'Analyzing…' : 'Analyze Resume'}
-                </button>
+                <div className="rewriteActions" style={{ marginTop: 12 }}>
+                  <button className="button" type="submit" disabled={loading}>
+                    {loading ? 'Analyzing…' : 'Analyze Resume'}
+                  </button>
+                  <button className="buttonSmall" type="button" onClick={clearAnalyzerState} disabled={loading}>
+                    Clear All
+                  </button>
+                </div>
 
                 {error ? <div className="error">{error}</div> : null}
                 {result && !error ? (
@@ -366,9 +444,6 @@ export default function App() {
               {result ? (
                 <div className="card results">
                   <div className="cardTitle">📊 ATS snapshot</div>
-
-                  {/* Move rewrite textarea next to the main card when in rewriter mode only */}
-
 
                   <div className="atsGaugeWrap">
                     <div className="atsGauge" aria-label={`ATS score ${ats} out of 100`} role="img">
@@ -430,7 +505,6 @@ export default function App() {
                         {result.resume_match}%
                       </div>
                     </div>
-
                   </div>
 
                   <div className="section">
@@ -498,9 +572,8 @@ export default function App() {
                             key={skill}
                             className="chipSkill"
                             style={{
-                              borderColor: "#22c55e",
-                              background:
-                                "linear-gradient(135deg,#22c55e22,#22c55e10)",
+                              borderColor: '#22c55e',
+                              background: 'linear-gradient(135deg,#22c55e22,#22c55e10)',
                             }}
                           >
                             {skill}
@@ -591,12 +664,10 @@ export default function App() {
                   <div className="cardTitle">📜 Overall summary</div>
                   <div className="summary">{result.summary}</div>
                 </div>
-
-                {/* Analyzer mode intentionally hides the Gemini rewrite feature */}
               </div>
             ) : null}
           </>
-        ) : (
+        ) : activeMode === 'rewriter' ? (
           <div className="grid columns2" style={{ marginTop: 0, gap: 16 }}>
             <form className="card" onSubmit={(e) => e.preventDefault()}>
               <div className="cardTitle">✦ Rewrite setup</div>
@@ -614,9 +685,14 @@ export default function App() {
                 {rewriteFile ? <div className="uploadFileName">{rewriteFile.name}</div> : null}
               </div>
 
-              <button type="button" className="button" onClick={onRewrite} disabled={loading}>
-                {loading ? 'Rewriting…' : 'Rewrite Resume'}
-              </button>
+              <div className="rewriteActions" style={{ marginTop: 12 }}>
+                <button type="button" className="button" onClick={onRewrite} disabled={loading}>
+                  {loading ? 'Rewriting…' : 'Rewrite Resume'}
+                </button>
+                <button type="button" className="buttonSmall" onClick={clearRewriterState} disabled={loading}>
+                  Clear All
+                </button>
+              </div>
 
               {error ? <div className="error">{error}</div> : null}
               {hasRewriteText && !error ? <div className="success">Rewrite complete.</div> : null}
@@ -649,7 +725,6 @@ export default function App() {
                           // ignore
                         }
 
-                        // Fallback: select textarea content and copy via execCommand
                         const ta = document.querySelector('textarea.rewriteTextarea') as HTMLTextAreaElement | null
                         if (!ta) return
 
@@ -662,7 +737,6 @@ export default function App() {
                         } catch {
                           // ignore
                         } finally {
-                          // prevent scroll jumps
                           ta.setSelectionRange(0, 0)
                         }
                       }}
@@ -670,7 +744,6 @@ export default function App() {
                     >
                       {copyState === 'copied' ? 'Copied!' : 'Copy'}
                     </button>
-
 
                     <button
                       type="button"
@@ -680,7 +753,6 @@ export default function App() {
                     >
                       Download PDF
                     </button>
-
                   </div>
                 </div>
 
@@ -701,7 +773,135 @@ export default function App() {
                     </ul>
                   </div>
                 ) : null}
+              </div>
+            ) : null}
+          </div>
+        ) : (
+          <div className="grid columns2" style={{ marginTop: 0, gap: 16 }}>
+            <form className="card" onSubmit={onGenerateCoverLetter}>
+              <div className="cardTitle">✉️ Cover letter generator</div>
 
+              <label className="label">Resume PDF</label>
+              <div className="uploadZone" role="button" tabIndex={0}>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(ev) => setCoverLetterFile(ev.target.files?.[0] ?? null)}
+                />
+                <div className="uploadIcon">⤒</div>
+                <div className="uploadText">Upload file</div>
+                <div className="uploadSub">or drag & drop</div>
+                {coverLetterFile ? <div className="uploadFileName">{coverLetterFile.name}</div> : null}
+              </div>
+
+              <label className="label">Position</label>
+              <input
+                className="input"
+                value={coverLetterPosition}
+                onChange={(e) => setCoverLetterPosition(e.target.value)}
+                placeholder="Frontend Developer"
+              />
+
+              <label className="label">Job description</label>
+              <textarea
+                className="textarea"
+                value={coverLetterJobDescription}
+                onChange={(e) => setCoverLetterJobDescription(e.target.value)}
+                placeholder="Paste the full job description here."
+              />
+
+              <label className="label">Company name (optional)</label>
+              <input
+                className="input"
+                value={coverLetterCompanyName}
+                onChange={(e) => setCoverLetterCompanyName(e.target.value)}
+                placeholder="Google, Accenture, Microsoft"
+              />
+
+              <button className="button" type="submit" disabled={loading}>
+                {loading ? 'Generating…' : 'Generate Cover Letter'}
+              </button>
+
+              {error ? <div className="error">{error}</div> : null}
+              {hasCoverLetterText && !error ? <div className="success">Cover letter generated.</div> : null}
+            </form>
+
+            {hasCoverLetterText ? (
+              <div className="card">
+                <div className="cardTitle">✉️ Generated cover letter</div>
+
+                <div className="rewriteTopRow">
+                  <div className="rewriteStatus">
+                    <span className="rewriteStatusText">Professional, ATS-friendly draft.</span>
+                  </div>
+                  <div className="rewriteActions">
+                    <button
+                      type="button"
+                      className="buttonSmall"
+                      onClick={async () => {
+                        try {
+                          await navigator.clipboard.writeText(coverLetterOutput)
+                          setCopyState('copied')
+                          return
+                        } catch {
+                          // ignore
+                        }
+
+                        const ta = document.querySelector('textarea.coverLetterTextarea') as HTMLTextAreaElement | null
+                        if (!ta) return
+
+                        ta.focus()
+                        ta.select()
+
+                        try {
+                          const ok = document.execCommand('copy')
+                          if (ok) setCopyState('copied')
+                        } catch {
+                          // ignore
+                        } finally {
+                          ta.setSelectionRange(0, 0)
+                        }
+                      }}
+                      disabled={loading}
+                    >
+                      {copyState === 'copied' ? 'Copied!' : 'Copy'}
+                    </button>
+
+                    <button
+                      type="button"
+                      className="buttonSmall"
+                      onClick={() => downloadPdf('Cover_Letter.pdf', coverLetterOutput, 'Cover Letter')}
+                      disabled={loading || !coverLetterOutput.trim()}
+                    >
+                      Download PDF
+                    </button>
+
+                    <button
+                      type="button"
+                      className="buttonSmall"
+                      onClick={onRegenerateCoverLetter}
+                      disabled={loading}
+                    >
+                      Regenerate
+                    </button>
+
+                    <button
+                      type="button"
+                      className="buttonSmall"
+                      onClick={clearCoverLetterState}
+                      disabled={loading}
+                    >
+                      Clear All
+                    </button>
+                  </div>
+                </div>
+
+                <textarea
+                  className="textarea rewriteTextarea coverLetterTextarea"
+                  value={coverLetterOutput}
+                  readOnly
+                  rows={16}
+                />
               </div>
             ) : null}
           </div>
