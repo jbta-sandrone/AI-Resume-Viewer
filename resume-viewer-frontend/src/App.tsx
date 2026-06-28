@@ -331,7 +331,7 @@ export default function App() {
             onClick={() => switchMode('coverLetter')}
           >
             <span className="sidebarIcon">✉️</span>
-            <span className="sidebarItemText">Cover Letter Generator</span>
+            <span className="sidebarItemText">Cover Letter </span>
           </button>
         </nav>
 
@@ -395,7 +395,7 @@ export default function App() {
                   tabIndex={0}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
-                      ;(e.currentTarget as HTMLDivElement).click()
+                      ; (e.currentTarget as HTMLDivElement).click()
                     }
                   }}
                 >
@@ -818,9 +818,14 @@ export default function App() {
                 placeholder="Google, Accenture, Microsoft"
               />
 
-              <button className="button" type="submit" disabled={loading}>
-                {loading ? 'Generating…' : 'Generate Cover Letter'}
-              </button>
+              <div className="rewriteActions" style={{ marginTop: 12 }}>
+                <button className="button" type="submit" disabled={loading}>
+                  {loading ? 'Generating…' : 'Generate Cover Letter'}
+                </button>
+                <button className="buttonSmall" type="button" onClick={clearCoverLetterState} disabled={loading}>
+                  Clear All
+                </button>
+              </div>
 
               {error ? <div className="error">{error}</div> : null}
               {hasCoverLetterText && !error ? <div className="success">Cover letter generated.</div> : null}
@@ -885,14 +890,6 @@ export default function App() {
                       Regenerate
                     </button>
 
-                    <button
-                      type="button"
-                      className="buttonSmall"
-                      onClick={clearCoverLetterState}
-                      disabled={loading}
-                    >
-                      Clear All
-                    </button>
                   </div>
                 </div>
 
