@@ -628,9 +628,9 @@ export default function App() {
       <aside className={`sidebar ${mobileMenuOpen ? 'mobileOpen' : ''}`} aria-label="Resume tools">
         <div className="sidebarTop">
           <div className="sidebarLogo">
-            <span className="sidebarLogoText">AR</span>
+            <span className="sidebarLogoText">NW</span>
           </div>
-          <div className="sidebarTitle">AI Resume Suite</div>
+          <div className="sidebarTitle">NelWorks</div>
         </div>
 
         <nav className="sidebarNav">
@@ -681,17 +681,16 @@ export default function App() {
         </nav>
 
         <div className="sidebarFooter">
-          <div className="sidebarHintTitle">Mode behavior</div>
-          <div className="sidebarHintText">Only the active feature is enabled.</div>
+        
         </div>
       </aside>
 
       <main className="mainPane">
         <div className="header">
           <div className="brand">
-            <div className="logo" />
+            <div className="" />
             <div className="titleWrap">
-              <h1>AI Resume Viewer</h1>
+              <h1>NelWorks - AI Career Assistant</h1>
               <p className="subtitle">
                 {activeMode === 'chat'
                   ? 'Chat with an AI assistant for resume, career, ATS, cover letter, and interview guidance.'
