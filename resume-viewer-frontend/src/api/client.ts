@@ -69,6 +69,31 @@ export async function generateInterviewQuestions(input: { file: File }): Promise
   return (await res.json()) as InterviewQuestionsResponse
 }
 
+export async function chatWithResume(input: {
+  message: string
+  file?: File | null
+  conversationHistory?: Array<{ role: 'user' | 'assistant'; content: string }>
+}): Promise<{ reply: string }> {
+  const form = new FormData()
+  form.append('message', input.message)
+  if (input.file) form.append('file', input.file)
+  if (input.conversationHistory?.length) {
+    form.append('conversation_history', JSON.stringify(input.conversationHistory))
+  }
+
+  const res = await fetch(`${VITE_API_BASE_URL}/api/resume-chat`, {
+    method: 'POST',
+    body: form
+  })
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new Error(`Backend error (${res.status}): ${text || res.statusText}`)
+  }
+
+  return (await res.json()) as { reply: string }
+}
+
 export async function evaluateInterviewAnswer(input: {
   question: string
   answer: string

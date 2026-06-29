@@ -5,6 +5,7 @@ from app.services.gemini import (
     generate_cover_letter_with_gemini,
     generate_interview_questions_with_gemini,
     evaluate_interview_answer_with_gemini,
+    chat_with_resume_assistant,
 )
 
 router = APIRouter()
@@ -55,4 +56,43 @@ def interview_evaluate(
     answer: str = Form(...),
 ):
     return evaluate_interview_answer_with_gemini(question=question, answer=answer)
+
+
+@router.post("/resume-chat")
+def resume_chat(
+    message: str = Form(...),
+    file: UploadFile | None = File(None),
+    conversation_history: str | None = Form(None),
+):
+    resume_text = ""
+    history = None
+
+    if file is not None and getattr(file, "filename", None):
+        raw = file.file.read()
+        if raw:
+            text_parts: list[str] = []
+            import io
+            import pdfplumber
+
+            with pdfplumber.open(io.BytesIO(raw)) as pdf:
+                for page in pdf.pages:
+                    page_text = page.extract_text() or ""
+                    text_parts.append(page_text)
+            resume_text = "\n".join(text_parts).strip()
+
+    if conversation_history:
+        import json
+
+        try:
+            parsed_history = json.loads(conversation_history)
+            if isinstance(parsed_history, list):
+                history = parsed_history
+        except json.JSONDecodeError:
+            history = None
+
+    return chat_with_resume_assistant(
+        message=message,
+        resume_text=resume_text or None,
+        conversation_history=history,
+    )
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { analyzeResume, generateCoverLetter, evaluateInterviewAnswer, generateInterviewQuestions } from './api/client'
+import { analyzeResume, generateCoverLetter, evaluateInterviewAnswer, generateInterviewQuestions, chatWithResume } from './api/client'
 import type { AnalyzeResponse, InterviewEvaluationResponse, InterviewQuestionsResponse } from './api/types'
 
 function clamp(n: number, min: number, max: number) {
@@ -60,7 +60,7 @@ function downloadPdf(_filename: string, content: string, title = 'AI Resume Rewr
   setTimeout(() => win.print(), 200)
 }
 
-type Mode = 'analyzer' | 'rewriter' | 'coverLetter' | 'interview'
+type Mode = 'chat' | 'analyzer' | 'rewriter' | 'coverLetter' | 'interview'
 
 function resetFileInput(inputRef: React.MutableRefObject<HTMLInputElement | null>) {
   if (inputRef.current) {
@@ -69,7 +69,7 @@ function resetFileInput(inputRef: React.MutableRefObject<HTMLInputElement | null
 }
 
 export default function App() {
-  const [activeMode, setActiveMode] = useState<Mode>('analyzer')
+  const [activeMode, setActiveMode] = useState<Mode>('chat')
 
   const [file, setFile] = useState<File | null>(null)
   const [jobDescription, setJobDescription] = useState('')
@@ -81,6 +81,13 @@ export default function App() {
   const [coverLetterJobDescription, setCoverLetterJobDescription] = useState('')
   const [coverLetterCompanyName, setCoverLetterCompanyName] = useState('')
   const [coverLetterOutput, setCoverLetterOutput] = useState('')
+
+  const [chatFile, setChatFile] = useState<File | null>(null)
+  const [chatMessages, setChatMessages] = useState<Array<{ role: 'user' | 'assistant'; content: string }>>([])
+  const [chatInput, setChatInput] = useState('')
+  const [chatLoading, setChatLoading] = useState(false)
+  const [chatError, setChatError] = useState<string | null>(null)
+  const [copiedMessageKey, setCopiedMessageKey] = useState<string | null>(null)
 
   const [interviewFile, setInterviewFile] = useState<File | null>(null)
   const [interviewQuestions, setInterviewQuestions] = useState<InterviewQuestionsResponse | null>(null)
@@ -99,12 +106,14 @@ export default function App() {
     betterSampleAnswer: string
   }>>([])
   const [mockInterviewLoading, setMockInterviewLoading] = useState(false)
+  const [mockInterviewModalOpen, setMockInterviewModalOpen] = useState(false)
   const [revealedAnswers, setRevealedAnswers] = useState<Record<string, boolean>>({})
 
   const analyzerInputRef = useRef<HTMLInputElement | null>(null)
   const rewriteInputRef = useRef<HTMLInputElement | null>(null)
   const coverLetterInputRef = useRef<HTMLInputElement | null>(null)
   const interviewInputRef = useRef<HTMLInputElement | null>(null)
+  const chatInputRef = useRef<HTMLInputElement | null>(null)
 
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<AnalyzeResponse | null>(null)
@@ -125,6 +134,14 @@ export default function App() {
         '🧠 Analyzing your resume...',
         '🎯 Mapping your strengths and gaps...',
         '❓ Crafting personalized interview questions...',
+      ]
+    }
+
+    if (activeMode === 'chat') {
+      return [
+        '💬 Preparing your answer...',
+        '🧠 Reviewing your resume context...',
+        '✦ Crafting practical guidance...',
       ]
     }
 
@@ -155,6 +172,12 @@ export default function App() {
     return () => window.clearTimeout(t)
   }, [copyState])
 
+  useEffect(() => {
+    if (!copiedMessageKey) return
+    const t = window.setTimeout(() => setCopiedMessageKey(null), 1200)
+    return () => window.clearTimeout(t)
+  }, [copiedMessageKey])
+
   const missingSkills = useMemo(() => {
     if (!result) return [] as string[]
     return result.missing_skills ?? []
@@ -182,6 +205,7 @@ export default function App() {
     setMockInterviewEvaluation(null)
     setMockInterviewResults([])
     setMockInterviewLoading(false)
+    setMockInterviewModalOpen(false)
     setMobileMenuOpen(false)
   }
 
@@ -233,6 +257,53 @@ export default function App() {
     setCopyState('idle')
     setLoading(false)
     resetFileInput(interviewInputRef)
+  }
+
+  function clearChatState() {
+    setChatMessages([])
+    setChatInput('')
+    setChatError(null)
+    setChatLoading(false)
+    resetFileInput(chatInputRef)
+  }
+
+  async function copyMessageText(text: string, key: string) {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopiedMessageKey(key)
+    } catch {
+      setCopiedMessageKey(null)
+    }
+  }
+
+  async function sendChatMessage(messageOverride?: string) {
+    const message = (messageOverride ?? chatInput).trim()
+    if (!message) return
+
+    const historyForRequest = [...chatMessages, { role: 'user' as const, content: message }]
+
+    setChatError(null)
+    setChatMessages((prev) => [...prev, { role: 'user', content: message }])
+    setChatInput('')
+    setChatLoading(true)
+
+    try {
+      const res = await chatWithResume({
+        message,
+        file: chatFile,
+        conversationHistory: historyForRequest.map((item) => ({ role: item.role, content: item.content })),
+      })
+      setChatMessages((prev) => [...prev, { role: 'assistant', content: res.reply }])
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Chat request failed'
+      setChatError(msg)
+      setChatMessages((prev) => [...prev, {
+        role: 'assistant',
+        content: "I couldn't respond right now. Please try again in a moment.",
+      }])
+    } finally {
+      setChatLoading(false)
+    }
   }
 
   async function onAnalyze(e: React.FormEvent) {
@@ -422,6 +493,7 @@ export default function App() {
     setMockInterviewAnswer('')
     setMockInterviewEvaluation(null)
     setMockInterviewResults([])
+    setMockInterviewModalOpen(true)
     setError(null)
   }
 
@@ -564,6 +636,15 @@ export default function App() {
         <nav className="sidebarNav">
           <button
             type="button"
+            className={`sidebarItem ${activeMode === 'chat' ? 'active' : ''}`}
+            onClick={() => switchMode('chat')}
+          >
+            <span className="sidebarIcon">🤖</span>
+            <span className="sidebarItemText">AI Resume Chat</span>
+          </button>
+
+          <button
+            type="button"
             className={`sidebarItem ${activeMode === 'analyzer' ? 'active' : ''}`}
             onClick={() => switchMode('analyzer')}
           >
@@ -612,13 +693,15 @@ export default function App() {
             <div className="titleWrap">
               <h1>AI Resume Viewer</h1>
               <p className="subtitle">
-                {activeMode === 'analyzer'
-                  ? 'Upload a PDF resume to get ATS score, missing skills, grammar/formatting suggestions, and stronger wording.'
-                  : activeMode === 'rewriter'
-                    ? 'Upload a PDF resume and generate a stronger, ATS-friendly rewrite.'
-                    : activeMode === 'coverLetter'
-                      ? 'Create a tailored cover letter from your resume and a specific job description.'
-                      : 'Upload a PDF resume to generate personalized interview questions and sample answers.'}
+                {activeMode === 'chat'
+                  ? 'Chat with an AI assistant for resume, career, ATS, cover letter, and interview guidance.'
+                  : activeMode === 'analyzer'
+                    ? 'Upload a PDF resume to get ATS score, missing skills, grammar/formatting suggestions, and stronger wording.'
+                    : activeMode === 'rewriter'
+                      ? 'Upload a PDF resume and generate a stronger, ATS-friendly rewrite.'
+                      : activeMode === 'coverLetter'
+                        ? 'Create a tailored cover letter from your resume and a specific job description.'
+                        : 'Upload a PDF resume to generate personalized interview questions and sample answers.'}
               </p>
             </div>
           </div>
@@ -639,18 +722,170 @@ export default function App() {
                 ? activeMode === 'analyzer'
                   ? `ATS: ${ats}/100 · ${label.label}`
                   : 'Rewrite ready'
-                : activeMode === 'analyzer'
-                  ? 'Ready for analysis'
-                  : activeMode === 'rewriter'
-                    ? 'Ready to rewrite'
-                    : activeMode === 'coverLetter'
-                      ? 'Ready for cover letter'
-                      : 'Ready for interview prep'}
+                : activeMode === 'chat'
+                  ? 'Ready for chat'
+                  : activeMode === 'analyzer'
+                    ? 'Ready for analysis'
+                    : activeMode === 'rewriter'
+                      ? 'Ready to rewrite'
+                      : activeMode === 'coverLetter'
+                        ? 'Ready for cover letter'
+                        : 'Ready for interview prep'}
             </div>
           </div>
         </div>
 
-        {activeMode === 'analyzer' ? (
+        {activeMode === 'chat' ? (
+          <div className="grid columns2" style={{ marginTop: 0, gap: 16 }}>
+            <div className="card" style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', minHeight: 620 }}>
+              <div className="cardTitle">🤖 AI Resume Chat</div>
+              <div className="muted2" style={{ marginBottom: 14 }}>
+                Ask for resume advice, ATS help, cover letters, interview prep, and career guidance. You can chat with or without uploading a resume.
+              </div>
+
+              <div className="uploadZone" role="button" tabIndex={0} style={{ marginBottom: 14 }}>
+                <input
+                  ref={chatInputRef}
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(ev) => {
+                    setChatFile(ev.target.files?.[0] ?? null)
+                    resetFileInput(chatInputRef)
+                  }}
+                />
+                <div className="uploadIcon">⤒</div>
+                <div className="uploadText">Upload resume PDF</div>
+                <div className="uploadSub">optional context for more tailored answers</div>
+                {chatFile ? <div className="uploadFileName">{chatFile.name}</div> : null}
+              </div>
+
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 14 }}>
+                {[
+                  'Improve my resume',
+                  'Rewrite my summary',
+                  'Make my projects stronger',
+                  'What skills am I missing?',
+                  'Make my resume ATS-friendly',
+                  'Prepare me for interviews',
+                ].map((prompt) => (
+                  <button
+                    key={prompt}
+                    type="button"
+                    className="buttonSmall"
+                    onClick={() => sendChatMessage(prompt)}
+                    disabled={chatLoading}
+                  >
+                    {prompt}
+                  </button>
+                ))}
+              </div>
+
+              <div style={{ flex: 1, border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 14, background: 'rgba(255,255,255,0.03)', display: 'flex', flexDirection: 'column', gap: 10, overflow: 'hidden' }}>
+                <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {chatMessages.length === 0 && !chatLoading ? (
+                    <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                      <div
+                        style={{
+                          maxWidth: '82%',
+                          padding: '12px 14px',
+                          borderRadius: 16,
+                          background: 'rgba(255,255,255,0.07)',
+                          border: '1px solid rgba(255,255,255,0.08)',
+                          whiteSpace: 'pre-wrap',
+                          lineHeight: 1.55,
+                        }}
+                      >
+                        Hi! I’m your AI Resume Assistant.
+
+I can help you improve your resume, make it ATS-friendly, rewrite your summary or projects, suggest missing skills, prepare for interviews, and guide you through job applications.
+
+You can upload a resume for personalized feedback, or just ask a resume-related question to get started.
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {chatMessages.map((message, index) => {
+                    const messageKey = `${message.role}-${index}`
+                    return (
+                      <div
+                        key={messageKey}
+                        style={{
+                          display: 'flex',
+                          justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, maxWidth: '82%' }}>
+                          <div
+                            style={{
+                              padding: '12px 14px',
+                              borderRadius: 16,
+                              background: message.role === 'user' ? 'linear-gradient(135deg, rgba(34,211,238,0.24), rgba(124,58,237,0.22))' : 'rgba(255,255,255,0.07)',
+                              border: message.role === 'user' ? '1px solid rgba(34,211,238,0.18)' : '1px solid rgba(255,255,255,0.08)',
+                              whiteSpace: 'pre-wrap',
+                              lineHeight: 1.55,
+                            }}
+                          >
+                            {message.content}
+                          </div>
+                          <button
+                            type="button"
+                            className="buttonSmall"
+                            onClick={() => void copyMessageText(message.content, messageKey)}
+                            style={{ whiteSpace: 'nowrap', padding: '6px 8px' }}
+                          >
+                            {copiedMessageKey === messageKey ? '🗸' : '📑'}
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  })}
+
+                  {chatLoading ? (
+                    <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
+                      <div style={{ padding: '12px 14px', borderRadius: 16, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                        <div className="muted2">Thinking…</div>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+
+              {chatError ? <div className="error" style={{ marginTop: 12 }}>{chatError}</div> : null}
+
+              <div className="rewriteActions" style={{ marginTop: 12, flexWrap: 'wrap' }}>
+                <div style={{ position: 'relative', flex: 1, minWidth: 220 }}>
+                  <input
+                    className="input"
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault()
+                        void sendChatMessage()
+                      }
+                    }}
+                    placeholder="Ask anything about your resume, career, or job search..."
+                    disabled={chatLoading}
+                    style={{ padding: 14 }}
+                  />
+                  <button
+                    type="button"
+                    className="buttonSmall"
+                    onClick={() => void sendChatMessage()}
+                    disabled={chatLoading || !chatInput.trim()}
+                    style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', padding: '2px 10px', color: 'black', background: 'white', fontSize: 18 }}
+                    aria-label="Send message"
+                  >
+                    {chatLoading ? '…' : '➔'}
+                  </button>
+                </div>
+                <button className="buttonSmall" type="button" onClick={clearChatState} disabled={chatLoading}>
+                  Clear Chat
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : activeMode === 'analyzer' ? (
           <>
             <div className="grid">
               <form className="card" onSubmit={onAnalyze}>
@@ -740,7 +975,7 @@ export default function App() {
                               r={radius}
                               strokeWidth="10"
                               fill="none"
-                              stroke="rgba(124,58,237,0.95)"
+                              stroke="rgba(11, 241, 245, 0.95)"
                               strokeDasharray={circumference}
                               strokeDashoffset={dashOffset}
                               style={{ transformOrigin: '54px 54px' }}
@@ -1179,7 +1414,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {mockInterviewCompleted ? (
+                {mockInterviewCompleted && !mockInterviewModalOpen ? (
                   <div className="section" style={{ marginTop: 18 }}>
                     <h3>Interview Summary</h3>
                     <div className="muted2" style={{ marginBottom: 12 }}>
@@ -1229,83 +1464,18 @@ export default function App() {
                       </button>
                     </div>
                   </div>
-                ) : mockInterviewStarted ? (
-                  <form className="section" style={{ marginTop: 18 }} onSubmit={onSubmitInterviewAnswer}>
-                    <h3>Practice Question</h3>
-                    <div style={{ fontWeight: 700, marginBottom: 10 }}>
-                      {currentInterviewQuestion?.question}
-                    </div>
-                    <div className="muted2" style={{ marginBottom: 12 }}>
-                      Category: {currentInterviewQuestion?.category}
-                    </div>
-
-                    <label className="label">Your answer</label>
-                    <textarea
-                      className="textarea"
-                      value={mockInterviewAnswer}
-                      onChange={(e) => setMockInterviewAnswer(e.target.value)}
-                      placeholder="Type your answer here as if you were responding in an interview."
-                      rows={8}
-                    />
-
-                    <div className="rewriteActions" style={{ marginTop: 12 }}>
-                      <button className="button" type="submit" disabled={mockInterviewLoading || !mockInterviewAnswer.trim()}>
-                        {mockInterviewLoading ? 'Evaluating…' : 'Submit Answer'}
+                ) : mockInterviewStarted && !mockInterviewModalOpen ? (
+                  <div className="section" style={{ marginTop: 18 }}>
+                    <div className="card" style={{ padding: 16, background: 'rgba(255,255,255,0.04)' }}>
+                      <div style={{ fontWeight: 700, marginBottom: 8 }}>Mock interview practice is ready</div>
+                      <div className="muted2" style={{ marginBottom: 10 }}>
+                        Continue your interview practice in a focused modal view.
+                      </div>
+                      <button type="button" className="button" onClick={() => setMockInterviewModalOpen(true)}>
+                        Resume Mock Interview
                       </button>
                     </div>
-
-                    {mockInterviewEvaluation ? (
-                      <div className="card" style={{ marginTop: 16, padding: 16, background: 'rgba(255,255,255,0.04)' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                          <div>
-                            <div className="muted2">Score</div>
-                            <div style={{ fontSize: 28, fontWeight: 800 }}>{mockInterviewEvaluation.score}/10</div>
-                          </div>
-                          <div style={{ fontWeight: 700 }}>
-                            {mockInterviewEvaluation.score >= 8 ? 'Strong response' : mockInterviewEvaluation.score >= 6 ? 'Solid response' : 'Needs more structure'}
-                          </div>
-                        </div>
-
-                        <div style={{ marginTop: 12 }}>
-                          <div className="muted2" style={{ marginBottom: 6 }}>Strengths</div>
-                          <ul className="list">
-                            {mockInterviewEvaluation.strengths.map((item, idx) => (
-                              <li key={`strength-${idx}`}>{item}</li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div style={{ marginTop: 12 }}>
-                          <div className="muted2" style={{ marginBottom: 6 }}>Weaknesses</div>
-                          <ul className="list">
-                            {mockInterviewEvaluation.weaknesses.map((item, idx) => (
-                              <li key={`weakness-${idx}`}>{item}</li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div style={{ marginTop: 12 }}>
-                          <div className="muted2" style={{ marginBottom: 6 }}>Suggestions for improvement</div>
-                          <ul className="list">
-                            {mockInterviewEvaluation.suggestions.map((item, idx) => (
-                              <li key={`suggestion-${idx}`}>{item}</li>
-                            ))}
-                          </ul>
-                        </div>
-
-                        <div style={{ marginTop: 12 }}>
-                          <div className="muted2" style={{ marginBottom: 6 }}>Better sample answer</div>
-                          <div>{mockInterviewEvaluation.better_sample_answer}</div>
-                        </div>
-
-                        <div className="rewriteActions" style={{ marginTop: 14 }}>
-                          <button type="button" className="button" onClick={goToNextInterviewQuestion}>
-                            {mockInterviewQuestionIndex + 1 >= interviewQuestionBank.length ? 'View Summary' : 'Next Question'}
-                          </button>
-                        </div>
-                      </div>
-                    ) : null}
-                  </form>
+                  </div>
                 ) : null}
               </div>
             ) : null}
@@ -1442,6 +1612,158 @@ export default function App() {
           </div>
         )}
       </main>
+
+      {activeMode === 'interview' && mockInterviewModalOpen && mockInterviewStarted ? (
+        <div
+          style={{ position: 'fixed', inset: 0, background: 'rgba(2, 6, 23, 0.7)', backdropFilter: 'blur(6px)', zIndex: 1200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+          onClick={() => setMockInterviewModalOpen(false)}
+        >
+          <div
+            className="card"
+            style={{ position: 'relative', width: 'min(92vw, 760px)', maxHeight: '90vh', overflowY: 'auto', padding: 24 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="buttonSmall"
+              style={{ position: 'absolute', top: 12, right: 12 }}
+              onClick={() => setMockInterviewModalOpen(false)}
+            >
+               Close
+            </button>
+
+            <div className="cardTitle">🎤 Mock Interview Practice</div>
+
+            {mockInterviewCompleted ? (
+              <div className="section" style={{ marginTop: 12 }}>
+                <h3>Interview Summary</h3>
+                <div className="muted2" style={{ marginBottom: 12 }}>
+                  Review your overall performance and the strongest themes to improve.
+                </div>
+
+                <div className="card" style={{ background: 'rgba(255,255,255,0.04)', padding: 16 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                    <div>
+                      <div className="muted2">Overall average score</div>
+                      <div style={{ fontSize: 28, fontWeight: 800 }}>{interviewSummary.averageScore}/10</div>
+                    </div>
+                    <div>
+                      <div className="muted2">Strongest area</div>
+                      <div style={{ fontWeight: 700 }}>{interviewSummary.strongestArea}</div>
+                    </div>
+                    <div>
+                      <div className="muted2">Weakest area</div>
+                      <div style={{ fontWeight: 700 }}>{interviewSummary.weakestArea}</div>
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: 12 }}>
+                    <div className="muted2" style={{ marginBottom: 6 }}>Overall feedback</div>
+                    <div>{interviewSummary.feedback}</div>
+                  </div>
+
+                  <div style={{ marginTop: 12 }}>
+                    <div className="muted2" style={{ marginBottom: 6 }}>Top recommendations</div>
+                    <ul className="list">
+                      {interviewSummary.recommendations.map((item, idx) => (
+                        <li key={`${item}-${idx}`}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="rewriteActions" style={{ marginTop: 14 }}>
+                  <button type="button" className="button" onClick={startMockInterview}>
+                    Restart Interview
+                  </button>
+                  <button type="button" className="buttonSmall" onClick={onRegenerateInterviewQuestions}>
+                    Regenerate Questions
+                  </button>
+                  <button type="button" className="buttonSmall" onClick={clearInterviewState}>
+                    Clear All
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form className="section" style={{ marginTop: 12 }} onSubmit={onSubmitInterviewAnswer}>
+                <div style={{ fontWeight: 700, marginBottom: 10 }}>
+                  {currentInterviewQuestion?.question}
+                </div>
+                <div className="muted2" style={{ marginBottom: 12 }}>
+                  Category: {currentInterviewQuestion?.category}
+                </div>
+
+                <label className="label">Your answer</label>
+                <textarea
+                  className="textarea"
+                  value={mockInterviewAnswer}
+                  onChange={(e) => setMockInterviewAnswer(e.target.value)}
+                  placeholder="Type your answer here as if you were responding in an interview."
+                  rows={8}
+                />
+
+                <div className="rewriteActions" style={{ marginTop: 12 }}>
+                  <button className="button" type="submit" disabled={mockInterviewLoading || !mockInterviewAnswer.trim()}>
+                    {mockInterviewLoading ? 'Evaluating…' : 'Submit Answer'}
+                  </button>
+                </div>
+
+                {mockInterviewEvaluation ? (
+                  <div className="card" style={{ marginTop: 16, padding: 16, background: 'rgba(255,255,255,0.04)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                      <div>
+                        <div className="muted2">Score</div>
+                        <div style={{ fontSize: 28, fontWeight: 800 }}>{mockInterviewEvaluation.score}/10</div>
+                      </div>
+                      <div style={{ fontWeight: 700 }}>
+                        {mockInterviewEvaluation.score >= 8 ? 'Strong response' : mockInterviewEvaluation.score >= 6 ? 'Solid response' : 'Needs more structure'}
+                      </div>
+                    </div>
+
+                    <div style={{ marginTop: 12 }}>
+                      <div className="muted2" style={{ marginBottom: 6 }}>Strengths</div>
+                      <ul className="list">
+                        {mockInterviewEvaluation.strengths.map((item, idx) => (
+                          <li key={`strength-${idx}`}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div style={{ marginTop: 12 }}>
+                      <div className="muted2" style={{ marginBottom: 6 }}>Weaknesses</div>
+                      <ul className="list">
+                        {mockInterviewEvaluation.weaknesses.map((item, idx) => (
+                          <li key={`weakness-${idx}`}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div style={{ marginTop: 12 }}>
+                      <div className="muted2" style={{ marginBottom: 6 }}>Suggestions for improvement</div>
+                      <ul className="list">
+                        {mockInterviewEvaluation.suggestions.map((item, idx) => (
+                          <li key={`suggestion-${idx}`}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div style={{ marginTop: 12 }}>
+                      <div className="muted2" style={{ marginBottom: 6 }}>Better sample answer</div>
+                      <div>{mockInterviewEvaluation.better_sample_answer}</div>
+                    </div>
+
+                    <div className="rewriteActions" style={{ marginTop: 14 }}>
+                      <button type="button" className="button" onClick={goToNextInterviewQuestion}>
+                        {mockInterviewQuestionIndex + 1 >= interviewQuestionBank.length ? 'View Summary' : 'Next Question'}
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
+              </form>
+            )}
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

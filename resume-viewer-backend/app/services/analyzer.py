@@ -282,9 +282,14 @@ def analyze_resume_pdf(
     if run_rewrite:
         try:
             rewrite_data = rewrite_resume_with_insights(resume_text)
+            print("REWRITE DATA:", rewrite_data)
 
-            rewritten_resume = rewrite_data.get("rewritten_resume", "")
-            ai_suggestions = rewrite_data.get("suggestions", [])
+            if "error" in rewrite_data:
+                rewritten_resume = ""
+                ai_suggestions = [rewrite_data["error"]]
+            else:
+                rewritten_resume = rewrite_data.get("rewritten_resume", "")
+                ai_suggestions = rewrite_data.get("suggestions", [])
 
         except Exception as e:
             print("Gemini error:", e)

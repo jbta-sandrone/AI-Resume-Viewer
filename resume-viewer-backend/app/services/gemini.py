@@ -10,6 +10,9 @@ load_dotenv()
 
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
+print(os.getenv("GEMINI_API_KEY"))
+
+
 
 def _extract_pdf_text(uploaded_pdf) -> str:
     raw = uploaded_pdf.file.read()
@@ -22,6 +25,55 @@ def _extract_pdf_text(uploaded_pdf) -> str:
             page_text = page.extract_text() or ""
             text_parts.append(page_text)
     return "\n".join(text_parts).strip()
+
+
+def chat_with_resume_assistant(message: str, resume_text: str | None = None, conversation_history: list[dict[str, str]] | None = None):
+    history_text = ""
+    if conversation_history:
+        history_lines = []
+        for item in conversation_history:
+            role = str(item.get("role", "user")).strip()
+            content = str(item.get("content", "")).strip()
+            if role and content:
+                history_lines.append(f"{role.capitalize()}: {content}")
+        if history_lines:
+            history_text = "\n".join(history_lines)
+
+    resume_context = f"\nResume text:\n{resume_text}" if resume_text else ""
+    conversation_context = f"\nConversation history:\n{history_text}" if history_text else ""
+
+    prompt = f"""
+You are an AI Resume Career Assistant. You only help with resume, career, job application, ATS, cover letter, interview, skills, portfolio, and hiring-related topics.
+
+If the user asks anything unrelated, politely refuse and remind them you only help with resume and career-related topics.
+If resume text is provided, use it to give specific advice.
+If no resume is provided, give general but useful guidance.
+Do not invent resume details that are not provided.
+Keep answers practical, clear, and beginner-friendly.
+When giving resume rewrites, make them professional and ATS-friendly.
+When giving advice, use short sections or bullet points when helpful.
+{resume_context}
+{conversation_context}
+
+User message:
+{message}
+"""
+
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
+    except Exception as e:
+        return {
+            "reply": f"I’m having trouble responding right now. Please try again in a moment. ({str(e)})"
+        }
+
+    text = response.text.strip()
+    if not text:
+        return {"reply": "I’m here to help with resume and career guidance. Please share a question or paste your resume text for more tailored advice."}
+
+    return {"reply": text}
 
 
 def rewrite_resume_with_insights(resume_text: str):
@@ -52,7 +104,7 @@ Resume:
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.0-flash-lite",   # or keep 2.5-flash if you want
+            model="gemini-2.5-flash",   # or keep 2.5-flash if you want
             contents=prompt,
     )
     except Exception as e:
