@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { analyzeResume, generateCoverLetter, evaluateInterviewAnswer, generateInterviewQuestions } from './api/client'
 import type { AnalyzeResponse, InterviewEvaluationResponse, InterviewQuestionsResponse } from './api/types'
 
@@ -62,6 +62,12 @@ function downloadPdf(_filename: string, content: string, title = 'AI Resume Rewr
 
 type Mode = 'analyzer' | 'rewriter' | 'coverLetter' | 'interview'
 
+function resetFileInput(inputRef: React.MutableRefObject<HTMLInputElement | null>) {
+  if (inputRef.current) {
+    inputRef.current.value = ''
+  }
+}
+
 export default function App() {
   const [activeMode, setActiveMode] = useState<Mode>('analyzer')
 
@@ -94,6 +100,11 @@ export default function App() {
   }>>([])
   const [mockInterviewLoading, setMockInterviewLoading] = useState(false)
   const [revealedAnswers, setRevealedAnswers] = useState<Record<string, boolean>>({})
+
+  const analyzerInputRef = useRef<HTMLInputElement | null>(null)
+  const rewriteInputRef = useRef<HTMLInputElement | null>(null)
+  const coverLetterInputRef = useRef<HTMLInputElement | null>(null)
+  const interviewInputRef = useRef<HTMLInputElement | null>(null)
 
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<AnalyzeResponse | null>(null)
@@ -156,7 +167,14 @@ export default function App() {
     setResult(null)
     setCoverLetterOutput('')
     setInterviewQuestions(null)
+    setFile(null)
+    setRewriteFile(null)
+    setCoverLetterFile(null)
     setInterviewFile(null)
+    resetFileInput(analyzerInputRef)
+    resetFileInput(rewriteInputRef)
+    resetFileInput(coverLetterInputRef)
+    resetFileInput(interviewInputRef)
     setMockInterviewStarted(false)
     setMockInterviewCompleted(false)
     setMockInterviewQuestionIndex(0)
@@ -175,6 +193,7 @@ export default function App() {
     setError(null)
     setCopyState('idle')
     setLoading(false)
+    resetFileInput(analyzerInputRef)
   }
 
   function clearRewriterState() {
@@ -184,6 +203,7 @@ export default function App() {
     setRewriteStatus('idle')
     setCopyState('idle')
     setLoading(false)
+    resetFileInput(rewriteInputRef)
   }
 
   function clearCoverLetterState() {
@@ -195,6 +215,7 @@ export default function App() {
     setError(null)
     setCopyState('idle')
     setLoading(false)
+    resetFileInput(coverLetterInputRef)
   }
 
   function clearInterviewState() {
@@ -211,6 +232,7 @@ export default function App() {
     setError(null)
     setCopyState('idle')
     setLoading(false)
+    resetFileInput(interviewInputRef)
   }
 
   async function onAnalyze(e: React.FormEvent) {
@@ -554,7 +576,7 @@ export default function App() {
             className={`sidebarItem ${activeMode === 'rewriter' ? 'active' : ''}`}
             onClick={() => switchMode('rewriter')}
           >
-            <span className="sidebarIcon">✦</span>
+            <span className="sidebarIcon">🖊️</span>
             <span className="sidebarItemText">Resume Rewriter</span>
           </button>
 
@@ -646,9 +668,13 @@ export default function App() {
                   }}
                 >
                   <input
+                    ref={analyzerInputRef}
                     type="file"
                     accept="application/pdf"
-                    onChange={(ev) => setFile(ev.target.files?.[0] ?? null)}
+                    onChange={(ev) => {
+                      setFile(ev.target.files?.[0] ?? null)
+                      resetFileInput(analyzerInputRef)
+                    }}
                   />
                   <div className="uploadIcon">⤒</div>
                   <div className="uploadText">Upload file</div>
@@ -921,9 +947,13 @@ export default function App() {
               <label className="label">Resume PDF</label>
               <div className="uploadZone" role="button" tabIndex={0}>
                 <input
+                  ref={rewriteInputRef}
                   type="file"
                   accept="application/pdf"
-                  onChange={(ev) => setRewriteFile(ev.target.files?.[0] ?? null)}
+                  onChange={(ev) => {
+                    setRewriteFile(ev.target.files?.[0] ?? null)
+                    resetFileInput(rewriteInputRef)
+                  }}
                 />
                 <div className="uploadIcon">⤒</div>
                 <div className="uploadText">Upload file</div>
@@ -1030,9 +1060,13 @@ export default function App() {
               <label className="label">Resume PDF</label>
               <div className="uploadZone" role="button" tabIndex={0}>
                 <input
+                  ref={interviewInputRef}
                   type="file"
                   accept="application/pdf"
-                  onChange={(ev) => setInterviewFile(ev.target.files?.[0] ?? null)}
+                  onChange={(ev) => {
+                    setInterviewFile(ev.target.files?.[0] ?? null)
+                    resetFileInput(interviewInputRef)
+                  }}
                 />
                 <div className="uploadIcon">⤒</div>
                 <div className="uploadText">Upload file</div>
@@ -1098,7 +1132,7 @@ export default function App() {
                             style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.08)' }}
                           >
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 6 }}>
-                              <div style={{ fontWeight: 700, flex: 1 }}>
+                              <div style={{ fontWeight: 7, flex: 1 }}>
                                 {questionIndex + 1}. {item.question}
                               </div>
                               <button
@@ -1284,9 +1318,13 @@ export default function App() {
               <label className="label">Resume PDF</label>
               <div className="uploadZone" role="button" tabIndex={0}>
                 <input
+                  ref={coverLetterInputRef}
                   type="file"
                   accept="application/pdf"
-                  onChange={(ev) => setCoverLetterFile(ev.target.files?.[0] ?? null)}
+                  onChange={(ev) => {
+                    setCoverLetterFile(ev.target.files?.[0] ?? null)
+                    resetFileInput(coverLetterInputRef)
+                  }}
                 />
                 <div className="uploadIcon">⤒</div>
                 <div className="uploadText">Upload file</div>

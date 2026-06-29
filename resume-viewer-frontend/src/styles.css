@@ -83,7 +83,6 @@ a { color: inherit; text-decoration: none; }
   transition: width 180ms ease, padding 180ms ease;
 }
 
-
 .appShell {
   grid-template-columns: 70px 1fr;
   transition: grid-template-columns 180ms ease;
