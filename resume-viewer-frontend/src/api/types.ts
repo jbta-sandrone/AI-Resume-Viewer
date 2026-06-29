@@ -31,3 +31,21 @@ export type AnalyzeResponse = {
   rewritten_resume: string
   ai_suggestions?: string[]
 }
+
+export type InterviewQuestionsResponse = {
+  categories: Array<{
+    title: string
+    questions: Array<{
+      question: string
+      answer: string
+    }>
+  }>
+}
+
+export type InterviewEvaluationResponse = {
+  score: number
+  strengths: string[]
+  weaknesses: string[]
+  suggestions: string[]
+  better_sample_answer: string
+}

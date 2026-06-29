@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { analyzeResume, generateCoverLetter } from './api/client'
-import type { AnalyzeResponse } from './api/types'
+import { analyzeResume, generateCoverLetter, evaluateInterviewAnswer, generateInterviewQuestions } from './api/client'
+import type { AnalyzeResponse, InterviewEvaluationResponse, InterviewQuestionsResponse } from './api/types'
 
 function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n))
@@ -60,7 +60,7 @@ function downloadPdf(_filename: string, content: string, title = 'AI Resume Rewr
   setTimeout(() => win.print(), 200)
 }
 
-type Mode = 'analyzer' | 'rewriter' | 'coverLetter'
+type Mode = 'analyzer' | 'rewriter' | 'coverLetter' | 'interview'
 
 export default function App() {
   const [activeMode, setActiveMode] = useState<Mode>('analyzer')
@@ -76,6 +76,25 @@ export default function App() {
   const [coverLetterCompanyName, setCoverLetterCompanyName] = useState('')
   const [coverLetterOutput, setCoverLetterOutput] = useState('')
 
+  const [interviewFile, setInterviewFile] = useState<File | null>(null)
+  const [interviewQuestions, setInterviewQuestions] = useState<InterviewQuestionsResponse | null>(null)
+  const [mockInterviewStarted, setMockInterviewStarted] = useState(false)
+  const [mockInterviewCompleted, setMockInterviewCompleted] = useState(false)
+  const [mockInterviewQuestionIndex, setMockInterviewQuestionIndex] = useState(0)
+  const [mockInterviewAnswer, setMockInterviewAnswer] = useState('')
+  const [mockInterviewEvaluation, setMockInterviewEvaluation] = useState<InterviewEvaluationResponse | null>(null)
+  const [mockInterviewResults, setMockInterviewResults] = useState<Array<{
+    question: string
+    category: string
+    score: number
+    strengths: string[]
+    weaknesses: string[]
+    suggestions: string[]
+    betterSampleAnswer: string
+  }>>([])
+  const [mockInterviewLoading, setMockInterviewLoading] = useState(false)
+  const [revealedAnswers, setRevealedAnswers] = useState<Record<string, boolean>>({})
+
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<AnalyzeResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -87,6 +106,14 @@ export default function App() {
         '📝 Extracting your resume text...',
         '🎯 Tailoring the letter to the role...',
         '✦ Gemini is composing your cover letter...',
+      ]
+    }
+
+    if (activeMode === 'interview') {
+      return [
+        '🧠 Analyzing your resume...',
+        '🎯 Mapping your strengths and gaps...',
+        '❓ Crafting personalized interview questions...',
       ]
     }
 
@@ -128,6 +155,15 @@ export default function App() {
     setCopyState('idle')
     setResult(null)
     setCoverLetterOutput('')
+    setInterviewQuestions(null)
+    setInterviewFile(null)
+    setMockInterviewStarted(false)
+    setMockInterviewCompleted(false)
+    setMockInterviewQuestionIndex(0)
+    setMockInterviewAnswer('')
+    setMockInterviewEvaluation(null)
+    setMockInterviewResults([])
+    setMockInterviewLoading(false)
     setMobileMenuOpen(false)
   }
 
@@ -156,6 +192,22 @@ export default function App() {
     setCoverLetterJobDescription('')
     setCoverLetterCompanyName('')
     setCoverLetterOutput('')
+    setError(null)
+    setCopyState('idle')
+    setLoading(false)
+  }
+
+  function clearInterviewState() {
+    setInterviewFile(null)
+    setInterviewQuestions(null)
+    setMockInterviewStarted(false)
+    setMockInterviewCompleted(false)
+    setMockInterviewQuestionIndex(0)
+    setMockInterviewAnswer('')
+    setMockInterviewEvaluation(null)
+    setMockInterviewResults([])
+    setMockInterviewLoading(false)
+    setRevealedAnswers({})
     setError(null)
     setCopyState('idle')
     setLoading(false)
@@ -262,11 +314,192 @@ export default function App() {
     await requestCoverLetterGeneration()
   }
 
+  async function requestInterviewQuestionsGeneration() {
+    if (activeMode !== 'interview') return
+
+    setError(null)
+    setInterviewQuestions(null)
+
+    if (!interviewFile) {
+      setError('Upload a PDF resume first.')
+      return
+    }
+
+    setLoading(true)
+    try {
+      const res = await generateInterviewQuestions({ file: interviewFile })
+      setInterviewQuestions(res)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Interview question generation failed'
+      setError(msg)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function onGenerateInterviewQuestions(e: React.FormEvent) {
+    e.preventDefault()
+    await requestInterviewQuestionsGeneration()
+  }
+
+  async function onRegenerateInterviewQuestions() {
+    setMockInterviewStarted(false)
+    setMockInterviewCompleted(false)
+    setMockInterviewQuestionIndex(0)
+    setMockInterviewAnswer('')
+    setMockInterviewEvaluation(null)
+    setMockInterviewResults([])
+    setMockInterviewLoading(false)
+    await requestInterviewQuestionsGeneration()
+  }
+
+  async function onSubmitInterviewAnswer(e: React.FormEvent) {
+    e.preventDefault()
+    if (!currentInterviewQuestion) return
+
+    const cleanedAnswer = mockInterviewAnswer.trim()
+    if (!cleanedAnswer) {
+      setError('Type your answer before submitting.')
+      return
+    }
+
+    setError(null)
+    setMockInterviewLoading(true)
+    try {
+      const evaluation = await evaluateInterviewAnswer({
+        question: currentInterviewQuestion.question,
+        answer: cleanedAnswer,
+      })
+
+      setMockInterviewEvaluation(evaluation)
+      setMockInterviewResults((prev) => [
+        ...prev,
+        {
+          question: currentInterviewQuestion.question,
+          category: currentInterviewQuestion.category,
+          score: evaluation.score,
+          strengths: evaluation.strengths,
+          weaknesses: evaluation.weaknesses,
+          suggestions: evaluation.suggestions,
+          betterSampleAnswer: evaluation.better_sample_answer,
+        },
+      ])
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Interview evaluation failed'
+      setError(msg)
+    } finally {
+      setMockInterviewLoading(false)
+    }
+  }
+
+  function startMockInterview() {
+    if (!interviewQuestionBank.length) return
+    setMockInterviewStarted(true)
+    setMockInterviewCompleted(false)
+    setMockInterviewQuestionIndex(0)
+    setMockInterviewAnswer('')
+    setMockInterviewEvaluation(null)
+    setMockInterviewResults([])
+    setError(null)
+  }
+
+  function toggleAnswerReveal(questionKey: string) {
+    setRevealedAnswers((prev) => ({
+      ...prev,
+      [questionKey]: !prev[questionKey],
+    }))
+  }
+
+  function goToNextInterviewQuestion() {
+    if (!currentInterviewQuestion) return
+
+    if (mockInterviewQuestionIndex + 1 >= interviewQuestionBank.length) {
+      setMockInterviewCompleted(true)
+      setMockInterviewAnswer('')
+      setMockInterviewEvaluation(null)
+      return
+    }
+
+    setMockInterviewQuestionIndex((value) => value + 1)
+    setMockInterviewAnswer('')
+    setMockInterviewEvaluation(null)
+    setError(null)
+  }
+
   const ats = result?.ats_score.score ?? 0
   const label = scoreLabel(ats)
   const progressWidth = clamp(ats, 0, 100)
   const hasRewriteText = Boolean(result?.rewritten_resume?.trim())
   const hasCoverLetterText = Boolean(coverLetterOutput.trim())
+  const hasInterviewQuestions = Boolean(interviewQuestions?.categories?.some((category) => category.questions?.length))
+
+  const interviewQuestionBank = useMemo(() => {
+    if (!interviewQuestions?.categories?.length) return [] as Array<{ category: string; question: string; answer: string }>
+
+    return interviewQuestions.categories.flatMap((category) =>
+      (category.questions ?? []).map((question) => ({
+        category: category.title,
+        question: question.question,
+        answer: question.answer,
+      }))
+    )
+  }, [interviewQuestions])
+
+  const currentInterviewQuestion = interviewQuestionBank[mockInterviewQuestionIndex] ?? null
+  const interviewProgressLabel = interviewQuestionBank.length
+    ? `${mockInterviewQuestionIndex + 1} / ${interviewQuestionBank.length}`
+    : '0 / 0'
+
+  const interviewSummary = useMemo(() => {
+    if (!mockInterviewResults.length) {
+      return {
+        averageScore: 0,
+        strongestArea: 'N/A',
+        weakestArea: 'N/A',
+        feedback: 'Complete the mock interview to receive a summary.',
+        recommendations: ['Answer each question clearly and include a concrete example.'],
+      }
+    }
+
+    const averageScore = Math.round(
+      mockInterviewResults.reduce((sum, item) => sum + item.score, 0) / mockInterviewResults.length
+    )
+
+    const categoryScores = mockInterviewResults.reduce<Record<string, { total: number; count: number }>>((acc, item) => {
+      const entry = acc[item.category] ?? { total: 0, count: 0 }
+      entry.total += item.score
+      entry.count += 1
+      acc[item.category] = entry
+      return acc
+    }, {})
+
+    const strongestArea = Object.entries(categoryScores).sort((a, b) => {
+      const avgA = a[1].total / a[1].count
+      const avgB = b[1].total / b[1].count
+      return avgB - avgA
+    })[0]?.[0] ?? 'General'
+
+    const weakestArea = Object.entries(categoryScores).sort((a, b) => {
+      const avgA = a[1].total / a[1].count
+      const avgB = b[1].total / b[1].count
+      return avgA - avgB
+    })[0]?.[0] ?? 'General'
+
+    const recommendations = mockInterviewResults.flatMap((item) => item.suggestions).slice(0, 4)
+    const feedback = averageScore >= 8
+      ? 'You answered with strong clarity and confidence. Keep practicing to make each response more structured and concise.'
+      : averageScore >= 6
+        ? 'Your answers were solid and showed good potential. Focus on adding more concrete examples and clearer structure.'
+        : 'Your responses show room to grow. Emphasize clearer structure, stronger examples, and more confident phrasing.'
+
+    return {
+      averageScore,
+      strongestArea,
+      weakestArea,
+      feedback,
+      recommendations: recommendations.length ? recommendations : ['Use the STAR method to structure your answers.'],
+    }
+  }, [mockInterviewResults])
 
   const signals = result?.ats_score.signals
   const aiSuggestions = result?.ai_suggestions ?? []
@@ -333,6 +566,15 @@ export default function App() {
             <span className="sidebarIcon">✉️</span>
             <span className="sidebarItemText">Cover Letter </span>
           </button>
+
+          <button
+            type="button"
+            className={`sidebarItem ${activeMode === 'interview' ? 'active' : ''}`}
+            onClick={() => switchMode('interview')}
+          >
+            <span className="sidebarIcon">💬</span>
+            <span className="sidebarItemText">Interview Question</span>
+          </button>
         </nav>
 
         <div className="sidebarFooter">
@@ -352,7 +594,9 @@ export default function App() {
                   ? 'Upload a PDF resume to get ATS score, missing skills, grammar/formatting suggestions, and stronger wording.'
                   : activeMode === 'rewriter'
                     ? 'Upload a PDF resume and generate a stronger, ATS-friendly rewrite.'
-                    : 'Create a tailored cover letter from your resume and a specific job description.'}
+                    : activeMode === 'coverLetter'
+                      ? 'Create a tailored cover letter from your resume and a specific job description.'
+                      : 'Upload a PDF resume to generate personalized interview questions and sample answers.'}
               </p>
             </div>
           </div>
@@ -377,7 +621,9 @@ export default function App() {
                   ? 'Ready for analysis'
                   : activeMode === 'rewriter'
                     ? 'Ready to rewrite'
-                    : 'Ready for cover letter'}
+                    : activeMode === 'coverLetter'
+                      ? 'Ready for cover letter'
+                      : 'Ready for interview prep'}
             </div>
           </div>
         </div>
@@ -772,6 +1018,260 @@ export default function App() {
                       ))}
                     </ul>
                   </div>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+        ) : activeMode === 'interview' ? (
+          <div className="grid columns2" style={{ marginTop: 0, gap: 16 }}>
+            <form className="card" onSubmit={onGenerateInterviewQuestions}>
+              <div className="cardTitle">💬 AI Interview Questions</div>
+
+              <label className="label">Resume PDF</label>
+              <div className="uploadZone" role="button" tabIndex={0}>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(ev) => setInterviewFile(ev.target.files?.[0] ?? null)}
+                />
+                <div className="uploadIcon">⤒</div>
+                <div className="uploadText">Upload file</div>
+                <div className="uploadSub">or drag & drop</div>
+                {interviewFile ? <div className="uploadFileName">{interviewFile.name}</div> : null}
+              </div>
+
+              <div className="rewriteActions" style={{ marginTop: 12 }}>
+                <button className="button" type="submit" disabled={loading || !interviewFile}>
+                  {loading ? 'Generating…' : 'Generate Interview Questions'}
+                </button>
+                <button className="buttonSmall" type="button" onClick={clearInterviewState} disabled={loading}>
+                  Clear All
+                </button>
+              </div>
+
+              {error ? <div className="error">{error}</div> : null}
+              {hasInterviewQuestions && !error ? <div className="success">Interview questions generated.</div> : null}
+            </form>
+
+            {hasInterviewQuestions ? (
+              <div className="card">
+                <div className="cardTitle">🎤 Interview prep</div>
+
+                <div className="rewriteTopRow">
+                  <div className="rewriteStatus">
+                    <span className="rewriteStatusText">
+                      {mockInterviewCompleted
+                        ? 'Interview complete. Review your summary and next steps.'
+                        : mockInterviewStarted
+                          ? `Question ${interviewProgressLabel}`
+                          : 'Personalized questions tailored to your resume.'}
+                    </span>
+                  </div>
+                  <div className="rewriteActions">
+                    <button
+                      type="button"
+                      className="buttonSmall"
+                      onClick={onRegenerateInterviewQuestions}
+                      disabled={loading}
+                    >
+                      Regenerate Questions
+                    </button>
+                  </div>
+                </div>
+
+                <div className="section" style={{ marginTop: 18 }}>
+                  <h3>Generated Interview Questions</h3>
+                  <div className="muted2" style={{ marginBottom: 12 }}>
+                    Review the personalized questions and sample answers below, then practice them with the mock interview tool.
+                  </div>
+
+                  {interviewQuestions?.categories?.map((category, categoryIndex) => (
+                    <div key={`${category.title}-${categoryIndex}`} style={{ marginBottom: 18 }}>
+                      <h3 style={{ fontSize: 16, marginBottom: 8 }}>{category.title}</h3>
+                      {category.questions.map((item, questionIndex) => {
+                        const questionKey = `${categoryIndex}-${questionIndex}`
+                        const isRevealed = Boolean(revealedAnswers[questionKey])
+
+                        return (
+                          <div
+                            key={questionKey}
+                            style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.08)' }}
+                          >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 6 }}>
+                              <div style={{ fontWeight: 700, flex: 1 }}>
+                                {questionIndex + 1}. {item.question}
+                              </div>
+                              <button
+                                type="button"
+                                className="buttonSmall"
+                                onClick={() => toggleAnswerReveal(questionKey)}
+                                aria-expanded={isRevealed}
+                                aria-label={isRevealed ? 'Hide sample answer' : 'Reveal sample answer'}
+                                style={{ whiteSpace: 'nowrap' }}
+                              >
+                                {isRevealed ? '🙈 Hide' : '👁 Reveal'}
+                              </button>
+                            </div>
+
+                            <div
+                              style={{
+                                maxHeight: isRevealed ? 220 : 0,
+                                opacity: isRevealed ? 1 : 0,
+                                overflow: 'hidden',
+                                transition: 'max-height 220ms ease, opacity 220ms ease',
+                              }}
+                            >
+                              <div style={{ fontWeight: 600, marginBottom: 4 }}>Sample Answer</div>
+                              <div className="muted2">{item.answer}</div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="section" style={{ marginTop: 18 }}>
+                  <div className="card" style={{ padding: 16, background: 'rgba(255,255,255,0.04)' }}>
+                    <div style={{ fontWeight: 700, marginBottom: 8 }}>Mock Interview Practice</div>
+                    <div className="muted2" style={{ marginBottom: 10 }}>
+                      Answer one question at a time and receive AI feedback, strengths, weaknesses, and a stronger sample answer.
+                    </div>
+                    {!mockInterviewStarted && !mockInterviewCompleted ? (
+                      <button type="button" className="button" onClick={startMockInterview} disabled={!interviewQuestionBank.length}>
+                        Start Mock Interview
+                      </button>
+                    ) : null}
+                  </div>
+                </div>
+
+                {mockInterviewCompleted ? (
+                  <div className="section" style={{ marginTop: 18 }}>
+                    <h3>Interview Summary</h3>
+                    <div className="muted2" style={{ marginBottom: 12 }}>
+                      Review your overall performance and the strongest themes to improve.
+                    </div>
+
+                    <div className="card" style={{ background: 'rgba(255,255,255,0.04)', padding: 16 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+                        <div>
+                          <div className="muted2">Overall average score</div>
+                          <div style={{ fontSize: 28, fontWeight: 800 }}>{interviewSummary.averageScore}/10</div>
+                        </div>
+                        <div>
+                          <div className="muted2">Strongest area</div>
+                          <div style={{ fontWeight: 700 }}>{interviewSummary.strongestArea}</div>
+                        </div>
+                        <div>
+                          <div className="muted2">Weakest area</div>
+                          <div style={{ fontWeight: 700 }}>{interviewSummary.weakestArea}</div>
+                        </div>
+                      </div>
+
+                      <div style={{ marginTop: 12 }}>
+                        <div className="muted2" style={{ marginBottom: 6 }}>Overall feedback</div>
+                        <div>{interviewSummary.feedback}</div>
+                      </div>
+
+                      <div style={{ marginTop: 12 }}>
+                        <div className="muted2" style={{ marginBottom: 6 }}>Top recommendations</div>
+                        <ul className="list">
+                          {interviewSummary.recommendations.map((item, idx) => (
+                            <li key={`${item}-${idx}`}>{item}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+
+                    <div className="rewriteActions" style={{ marginTop: 14 }}>
+                      <button type="button" className="button" onClick={startMockInterview}>
+                        Restart Interview
+                      </button>
+                      <button type="button" className="buttonSmall" onClick={onRegenerateInterviewQuestions}>
+                        Regenerate Questions
+                      </button>
+                      <button type="button" className="buttonSmall" onClick={clearInterviewState}>
+                        Clear All
+                      </button>
+                    </div>
+                  </div>
+                ) : mockInterviewStarted ? (
+                  <form className="section" style={{ marginTop: 18 }} onSubmit={onSubmitInterviewAnswer}>
+                    <h3>Practice Question</h3>
+                    <div style={{ fontWeight: 700, marginBottom: 10 }}>
+                      {currentInterviewQuestion?.question}
+                    </div>
+                    <div className="muted2" style={{ marginBottom: 12 }}>
+                      Category: {currentInterviewQuestion?.category}
+                    </div>
+
+                    <label className="label">Your answer</label>
+                    <textarea
+                      className="textarea"
+                      value={mockInterviewAnswer}
+                      onChange={(e) => setMockInterviewAnswer(e.target.value)}
+                      placeholder="Type your answer here as if you were responding in an interview."
+                      rows={8}
+                    />
+
+                    <div className="rewriteActions" style={{ marginTop: 12 }}>
+                      <button className="button" type="submit" disabled={mockInterviewLoading || !mockInterviewAnswer.trim()}>
+                        {mockInterviewLoading ? 'Evaluating…' : 'Submit Answer'}
+                      </button>
+                    </div>
+
+                    {mockInterviewEvaluation ? (
+                      <div className="card" style={{ marginTop: 16, padding: 16, background: 'rgba(255,255,255,0.04)' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                          <div>
+                            <div className="muted2">Score</div>
+                            <div style={{ fontSize: 28, fontWeight: 800 }}>{mockInterviewEvaluation.score}/10</div>
+                          </div>
+                          <div style={{ fontWeight: 700 }}>
+                            {mockInterviewEvaluation.score >= 8 ? 'Strong response' : mockInterviewEvaluation.score >= 6 ? 'Solid response' : 'Needs more structure'}
+                          </div>
+                        </div>
+
+                        <div style={{ marginTop: 12 }}>
+                          <div className="muted2" style={{ marginBottom: 6 }}>Strengths</div>
+                          <ul className="list">
+                            {mockInterviewEvaluation.strengths.map((item, idx) => (
+                              <li key={`strength-${idx}`}>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div style={{ marginTop: 12 }}>
+                          <div className="muted2" style={{ marginBottom: 6 }}>Weaknesses</div>
+                          <ul className="list">
+                            {mockInterviewEvaluation.weaknesses.map((item, idx) => (
+                              <li key={`weakness-${idx}`}>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div style={{ marginTop: 12 }}>
+                          <div className="muted2" style={{ marginBottom: 6 }}>Suggestions for improvement</div>
+                          <ul className="list">
+                            {mockInterviewEvaluation.suggestions.map((item, idx) => (
+                              <li key={`suggestion-${idx}`}>{item}</li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        <div style={{ marginTop: 12 }}>
+                          <div className="muted2" style={{ marginBottom: 6 }}>Better sample answer</div>
+                          <div>{mockInterviewEvaluation.better_sample_answer}</div>
+                        </div>
+
+                        <div className="rewriteActions" style={{ marginTop: 14 }}>
+                          <button type="button" className="button" onClick={goToNextInterviewQuestion}>
+                            {mockInterviewQuestionIndex + 1 >= interviewQuestionBank.length ? 'View Summary' : 'Next Question'}
+                          </button>
+                        </div>
+                      </div>
+                    ) : null}
+                  </form>
                 ) : null}
               </div>
             ) : null}

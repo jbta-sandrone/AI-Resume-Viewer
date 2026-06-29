@@ -1,4 +1,4 @@
-import type { AnalyzeResponse } from './types'
+import type { AnalyzeResponse, InterviewEvaluationResponse, InterviewQuestionsResponse } from './types'
 
 const VITE_API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL ?? 'http://localhost:8000'
 
@@ -50,5 +50,43 @@ export async function generateCoverLetter(input: {
   }
 
   return (await res.json()) as { cover_letter: string }
+}
+
+export async function generateInterviewQuestions(input: { file: File }): Promise<InterviewQuestionsResponse> {
+  const form = new FormData()
+  form.append('file', input.file)
+
+  const res = await fetch(`${VITE_API_BASE_URL}/api/interview-questions`, {
+    method: 'POST',
+    body: form
+  })
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new Error(`Backend error (${res.status}): ${text || res.statusText}`)
+  }
+
+  return (await res.json()) as InterviewQuestionsResponse
+}
+
+export async function evaluateInterviewAnswer(input: {
+  question: string
+  answer: string
+}): Promise<InterviewEvaluationResponse> {
+  const form = new FormData()
+  form.append('question', input.question)
+  form.append('answer', input.answer)
+
+  const res = await fetch(`${VITE_API_BASE_URL}/api/interview-evaluate`, {
+    method: 'POST',
+    body: form
+  })
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new Error(`Backend error (${res.status}): ${text || res.statusText}`)
+  }
+
+  return (await res.json()) as InterviewEvaluationResponse
 }
 

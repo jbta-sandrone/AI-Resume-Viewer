@@ -50,10 +50,15 @@ Resume:
 {resume_text}
 """
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt,
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.0-flash-lite",   # or keep 2.5-flash if you want
+            contents=prompt,
     )
+    except Exception as e:
+        return {
+            "error": f"Gemini is busy try again later: {str(e)}"
+    }
 
     text = response.text.strip()
     text = text.replace("```json", "").replace("```", "").strip()
@@ -64,6 +69,120 @@ Resume:
         return {
             "rewritten_resume": text,
             "suggestions": []
+        }
+
+
+def generate_interview_questions_with_gemini(uploaded_pdf):
+    resume_text = _extract_pdf_text(uploaded_pdf)
+
+    prompt = f"""
+You are an expert technical recruiter and career coach.
+
+Analyze the following resume carefully before generating interview questions. The questions must feel personalized, realistic, and based on the candidate's actual background, including skills, technologies, projects, education, experience, certifications, and any resume strengths or weaknesses.
+
+Requirements:
+- Generate 12 to 15 questions total.
+- Group them into 5 categories: Technical Questions, Behavioral Questions, Project Questions, Problem Solving, and HR Questions.
+- Each category should contain 2 to 3 questions.
+- Make the questions sound like they came from a real interviewer.
+- Sample answers should be concise, professional, and suitable for fresh graduates or junior developers.
+- If the resume contains projects, include project-specific questions.
+- If the resume mentions programming languages or frameworks, include technical questions around them.
+- If the resume has gaps or weaker areas, include a few questions that let the candidate explain them professionally.
+- Return ONLY valid JSON in this format:
+{{"categories": [{{"title": "Technical Questions", "questions": [{{"question": "...", "answer": "..."}}]}}]}}
+
+Resume:
+{resume_text}
+"""
+
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt,
+    )
+
+    text = response.text.strip()
+    text = text.replace("```json", "").replace("```", "").strip()
+
+    try:
+        data = json.loads(text)
+        categories = data.get("categories", []) if isinstance(data, dict) else []
+        if not isinstance(categories, list):
+            categories = []
+
+        normalized_categories = []
+        for category in categories:
+            if not isinstance(category, dict):
+                continue
+
+            title = str(category.get("title", "")).strip() or "Questions"
+            questions = category.get("questions", [])
+            if not isinstance(questions, list):
+                questions = []
+
+            normalized_questions = []
+            for item in questions:
+                if not isinstance(item, dict):
+                    continue
+                question = str(item.get("question", "")).strip()
+                answer = str(item.get("answer", "")).strip()
+                if question and answer:
+                    normalized_questions.append({"question": question, "answer": answer})
+
+            if normalized_questions:
+                normalized_categories.append({"title": title, "questions": normalized_questions})
+
+        return {"categories": normalized_categories}
+    except json.JSONDecodeError:
+        return {"categories": []}
+
+
+def evaluate_interview_answer_with_gemini(question: str, answer: str):
+    prompt = f"""
+You are an experienced technical interviewer and career coach.
+
+Evaluate the following interview answer.
+
+Requirements:
+- Score the answer from 1 to 10.
+- Provide strengths as a short list.
+- Provide weaknesses as a short list.
+- Provide suggestions for improvement as a short list.
+- Provide a better sample answer that is concise, professional, and suitable for a fresh graduate or junior developer.
+- Return ONLY valid JSON in this format:
+{{"score": 7, "strengths": ["..."], "weaknesses": ["..."], "suggestions": ["..."], "better_sample_answer": "..."}}
+
+Interview Question:
+{question}
+
+Candidate Answer:
+{answer}
+"""
+
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt,
+    )
+
+    text = response.text.strip()
+    text = text.replace("```json", "").replace("```", "").strip()
+
+    try:
+        data = json.loads(text)
+        return {
+            "score": int(data.get("score", 5)) if str(data.get("score", "")).isdigit() else 5,
+            "strengths": data.get("strengths", []) if isinstance(data.get("strengths", []), list) else [],
+            "weaknesses": data.get("weaknesses", []) if isinstance(data.get("weaknesses", []), list) else [],
+            "suggestions": data.get("suggestions", []) if isinstance(data.get("suggestions", []), list) else [],
+            "better_sample_answer": str(data.get("better_sample_answer", "")).strip(),
+        }
+    except json.JSONDecodeError:
+        return {
+            "score": 5,
+            "strengths": [],
+            "weaknesses": [],
+            "suggestions": [],
+            "better_sample_answer": "I would answer this by focusing on the impact of my work, showing ownership, and giving a concise example."
         }
 
 

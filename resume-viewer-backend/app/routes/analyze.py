@@ -1,7 +1,11 @@
 from fastapi import APIRouter, File, UploadFile, Form
 
 from app.services.analyzer import analyze_resume_pdf
-from app.services.gemini import generate_cover_letter_with_gemini
+from app.services.gemini import (
+    generate_cover_letter_with_gemini,
+    generate_interview_questions_with_gemini,
+    evaluate_interview_answer_with_gemini,
+)
 
 router = APIRouter()
 
@@ -38,4 +42,17 @@ def cover_letter(
         job_description=job_description,
         company_name=company_name,
     )
+
+
+@router.post("/interview-questions")
+def interview_questions(file: UploadFile = File(...)):
+    return generate_interview_questions_with_gemini(uploaded_pdf=file)
+
+
+@router.post("/interview-evaluate")
+def interview_evaluate(
+    question: str = Form(...),
+    answer: str = Form(...),
+):
+    return evaluate_interview_answer_with_gemini(question=question, answer=answer)
 
