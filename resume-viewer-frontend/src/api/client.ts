@@ -1,5 +1,24 @@
 import type { AnalyzeResponse, InterviewEvaluationResponse, InterviewQuestionsResponse } from './types'
 
+export type ResumeDesignerData = {
+  name: string
+  contact: string[]
+  summary: string
+  skills: string[]
+  softSkills: string[]
+  designTools: string[]
+  aiTools: string[]
+  toolsPlatforms: string[]
+  languages: string[]
+  experience: string[]
+  projects: string[]
+  academicProjects: string[]
+  education: string[]
+  activities: string[]
+  certifications: string[]
+  awards: string[]
+}
+
 const VITE_API_BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL ?? 'http://localhost:8000'
 
 export async function analyzeResume(input: {
@@ -67,6 +86,23 @@ export async function generateInterviewQuestions(input: { file: File }): Promise
   }
 
   return (await res.json()) as InterviewQuestionsResponse
+}
+
+export async function generateResumeDesignerData(input: { file: File }): Promise<ResumeDesignerData> {
+  const form = new FormData()
+  form.append('file', input.file)
+
+  const res = await fetch(`${VITE_API_BASE_URL}/api/resume-designer`, {
+    method: 'POST',
+    body: form,
+  })
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new Error(`Backend error (${res.status}): ${text || res.statusText}`)
+  }
+
+  return (await res.json()) as ResumeDesignerData
 }
 
 export async function chatWithResume(input: {

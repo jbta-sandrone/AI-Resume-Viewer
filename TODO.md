@@ -1,16 +1,18 @@
-# TODO — Sidebar + Mode Split (Analyzer vs Rewriter)
+# TODO — Resume Designer template refinements
 
-- [ ] Update `resume-viewer-frontend/src/App.tsx`:
-  - [ ] Add sidebar with 2 clickable items
-  - [ ] Add `activeMode` state (`analyzer` | `rewriter`)
-  - [ ] Split UI rendering so only active mode’s UI exists
-  - [ ] Hide Gemini rewrite card in analyzer mode
-  - [ ] Add rewriter-only upload + rewrite button in rewriter mode
-- [ ] Update `resume-viewer-frontend/src/styles.css`:
-  - [ ] Add sidebar styles (aesthetic, active/hover states)
-  - [ ] Add responsive layout styles for sidebar + content
-- [ ] Manually test in browser:
-  - [ ] Click Analyzer => rewriter hidden
-  - [ ] Click Rewriter => analyzer hidden
-  - [ ] Verify buttons only function in their respective modes
+## Step 1 (analyze/confirm)
+- [x] Identified template rendering in `resume-viewer-frontend/src/App.tsx` (both thumbnails + downloaded HTML).
+- [x] Identified designer preview styling in `resume-viewer-frontend/src/styles.css`.
+
+## Step 2 (implement)
+- [ ] Refactor `renderDesignerHtml()` layouts for all 9 template ids.
+- [ ] Refactor `DesignerPreviewCard()` thumbnail DOM structure for all 9 template ids.
+- [ ] Add/adjust CSS in `resume-viewer-frontend/src/styles.css` to support new thumbnail structures.
+
+
+
+## Step 3 (verify)
+
+- [ ] Run `npm` build/lint for frontend (or `npm run build`) if available.
+- [ ] Manual sanity-check: generated templates show distinct layouts at thumbnail size.
 
