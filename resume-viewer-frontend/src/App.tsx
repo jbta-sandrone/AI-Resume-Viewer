@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { analyzeResume, generateCoverLetter, evaluateInterviewAnswer, generateInterviewQuestions, chatWithResume, generateResumeDesignerData } from './api/client'
+import { analyzeResume, generateCoverLetter, evaluateInterviewAnswer, generateInterviewQuestions, chatWithResume } from './api/client'
 import type { AnalyzeResponse, InterviewEvaluationResponse, InterviewQuestionsResponse } from './api/types'
-import type { ResumeDesignerData } from './api/client'
 import { QUIZ_CATEGORIES, QUIZ_DIFFICULTIES, getQuizQuestions, type QuizCategory, type QuizDifficulty, type ResumeQuizQuestion } from './quizQuestions'
+import ResumeSections from './resume-section'
 
 function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n))
@@ -21,43 +21,6 @@ function escapeHtml(s: string) {
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#39;')
-}
-
-function joinDesignerItems(items: Array<string | undefined | null> | undefined, limit = 8) {
-  return (items ?? [])
-    .filter((item): item is string => Boolean(item && item.trim()))
-    .slice(0, limit)
-    .join(' • ')
-}
-
-function buildDesignerContent(data: ResumeDesignerData) {
-  const tools = joinDesignerItems([
-    ...(data.designTools ?? []),
-    ...(data.aiTools ?? []),
-    ...(data.toolsPlatforms ?? []),
-  ], 10)
-  const projects = joinDesignerItems([...(data.projects ?? []), ...(data.academicProjects ?? [])], 4)
-  const credentials = joinDesignerItems([...(data.certifications ?? []), ...(data.awards ?? [])], 4)
-
-  return {
-    summary: data.summary?.trim() ?? '',
-    skills: joinDesignerItems(data.skills, 8),
-    softSkills: joinDesignerItems(data.softSkills, 6),
-    tools,
-    languages: joinDesignerItems(data.languages, 6),
-    experience: joinDesignerItems(data.experience, 3),
-    projects,
-    education: joinDesignerItems(data.education, 3),
-    activities: joinDesignerItems(data.activities, 3),
-    credentials,
-  }
-}
-
-function buildDesignerSectionMarkup(entries: Array<{ label: string; content: string }>) {
-  return entries
-    .filter(({ content }) => content)
-    .map(({ label, content }) => `<div class="section"><div class="label">${escapeHtml(label)}</div><div class="value">${escapeHtml(content)}</div></div>`)
-    .join('')
 }
 
 function downloadPdf(_filename: string, content: string, title = 'AI Resume Rewrite') {
@@ -99,416 +62,52 @@ function downloadPdf(_filename: string, content: string, title = 'AI Resume Rewr
   setTimeout(() => win.print(), 200)
 }
 
-type Mode = 'chat' | 'analyzer' | 'designer' | 'coverLetter' | 'resumeQuiz'
-type DesignerStyle = 'basic' | 'modern' | 'professional'
-type DesignerTemplate = {
-  id: string
-  name: string
-  style: DesignerStyle
+type Mode = 'chat' | 'analyzer' | 'coverLetter' | 'resumeQuiz' | 'learningHub'
+
+type LearningHubCategory = {
+  key: string
+  icon: string
+  title: string
+  description: string
 }
 
-type DesignerTemplatePreview = {
-  template: DesignerTemplate
-  data: ResumeDesignerData
-}
-
-const DESIGNER_TEMPLATES: Record<DesignerStyle, Array<{ id: string; name: string }>> = {
-  basic: [
-    { id: 'basic-clean', name: 'Basic Clean' },
-    { id: 'basic-compact', name: 'Basic Compact' },
-    { id: 'basic-ats', name: 'Basic ATS' },
-  ],
-  modern: [
-    { id: 'modern-gold', name: 'Modern Gold' },
-    { id: 'modern-sidebar', name: 'Modern Sidebar' },
-    { id: 'modern-elegant', name: 'Modern Elegant' },
-  ],
-  professional: [
-    { id: 'professional-corporate', name: 'Professional Corporate' },
-    { id: 'professional-executive', name: 'Professional Executive' },
-    { id: 'professional-minimal', name: 'Professional Minimal' },
-  ],
-}
+const LEARNING_HUB_CATEGORIES: LearningHubCategory[] = [
+  {
+    key: 'resume-sections',
+    icon: '📄',
+    title: 'Resume Sections',
+    description: 'Learn the purpose and structure of every section in a professional resume.',
+  },
+  {
+    key: 'ats-guide',
+    icon: '🤖',
+    title: 'ATS Guide',
+    description: 'Understand how Applicant Tracking Systems scan and evaluate resumes.',
+  },
+  {
+    key: 'projects-skills',
+    icon: '💼',
+    title: 'Projects & Skills',
+    description: 'Learn how to present your projects and technical skills effectively.',
+  },
+  {
+    key: 'fresh-graduate',
+    icon: '🎓',
+    title: 'Fresh Graduate Guide',
+    description: 'Practical advice for students and fresh graduates applying for their first job.',
+  },
+  {
+    key: 'interview-tips',
+    icon: '🎤',
+    title: 'Interview Tips',
+    description: 'Prepare for technical and HR interviews with confidence.',
+  },
+]
 
 function resetFileInput(inputRef: React.MutableRefObject<HTMLInputElement | null>) {
   if (inputRef.current) {
     inputRef.current.value = ''
   }
-}
-
-function renderDesignerHtml(template: DesignerTemplate, data: ResumeDesignerData) {
-  const contact = joinDesignerItems(data.contact)
-  const content = buildDesignerContent(data)
-  const summary = content.summary
-
-  if (template.id === 'basic-clean') {
-    const sections = buildDesignerSectionMarkup([
-      { label: 'Technical Skills', content: content.skills },
-      { label: 'Soft Skills', content: content.softSkills },
-      { label: 'Tools & Platforms', content: content.tools },
-      { label: 'Experience', content: content.experience },
-      { label: 'Education', content: content.education },
-      { label: 'Projects', content: content.projects },
-      { label: 'Languages', content: content.languages },
-      { label: 'Certificates & Awards', content: content.credentials },
-    ])
-    return `<!DOCTYPE html><html><head><meta charset="utf-8" /><title>${escapeHtml(template.name)}</title><style>body{font-family:Inter,system-ui,sans-serif;padding:24px;background:#f8fafc;color:#111827} .wrap{max-width:860px;margin:0 auto;background:#ffffff;border:1px solid #111827;padding:28px;border-radius:0} .title{font-size:24px;font-weight:800;letter-spacing:0.02em;margin-bottom:6px} .meta{font-size:12px;color:#374151;margin-bottom:14px} .summary{font-size:13px;line-height:1.6;color:#111827;margin-bottom:16px} .section{margin-top:12px;padding-top:10px;border-top:1px solid #d1d5db} .label{font-size:11px;text-transform:uppercase;letter-spacing:0.16em;font-weight:800;color:#111827;margin-bottom:4px} .value{font-size:13px;line-height:1.55}@media print{body{padding:0.3in}}</style></head><body><div class="wrap"><div class="title">${escapeHtml(data.name || 'Resume')}</div><div class="meta">${escapeHtml(contact)}</div>${summary ? `<div class="summary">${escapeHtml(summary)}</div>` : ''}${sections}</div></body></html>`
-  }
-
-  if (template.id === 'basic-compact') {
-    const sections = buildDesignerSectionMarkup([
-      { label: 'Technical Skills', content: content.skills },
-      { label: 'Experience', content: content.experience },
-      { label: 'Projects', content: content.projects },
-      { label: 'Education', content: content.education },
-      { label: 'Tools & Platforms', content: content.tools },
-      { label: 'Certifications & Awards', content: content.credentials },
-    ])
-    return `<!DOCTYPE html><html><head><meta charset="utf-8" /><title>${escapeHtml(template.name)}</title><style>body{font-family:Inter,system-ui,sans-serif;padding:24px;background:#f8fafc;color:#111827} .wrap{max-width:760px;margin:0 auto;background:#ffffff;border:1px solid #111827;padding:16px;border-radius:0} .title{font-size:18px;font-weight:800;margin-bottom:2px} .meta{font-size:10px;color:#374151;margin-bottom:8px} .summary{font-size:11px;line-height:1.45;color:#111827;margin-bottom:8px} .section{margin-top:8px;padding-top:6px;border-top:1px solid #111827} .label{font-size:10px;text-transform:uppercase;letter-spacing:0.14em;font-weight:800;color:#111827;margin-bottom:2px} .value{font-size:11px;line-height:1.45}@media print{body{padding:0.25in}}</style></head><body><div class="wrap"><div class="title">${escapeHtml(data.name || 'Resume')}</div><div class="meta">${escapeHtml(contact)}</div>${summary ? `<div class="summary">${escapeHtml(summary)}</div>` : ''}${sections}</div></body></html>`
-  }
-
-  if (template.id === 'basic-ats') {
-    const sections = buildDesignerSectionMarkup([
-      { label: 'Professional Summary', content: summary },
-      { label: 'Technical Skills', content: content.skills },
-      { label: 'Soft Skills', content: content.softSkills },
-      { label: 'Tools & Platforms', content: content.tools },
-      { label: 'Experience', content: content.experience },
-      { label: 'Education', content: content.education },
-      { label: 'Projects', content: content.projects },
-    ])
-    return `<!DOCTYPE html><html><head><meta charset="utf-8" /><title>${escapeHtml(template.name)}</title><style>body{font-family:Arial,Helvetica,sans-serif;padding:24px;background:#ffffff;color:#111827} .wrap{max-width:860px;margin:0 auto;background:#fff;border:1px solid #111827;padding:20px;border-radius:0} .title{font-size:22px;font-weight:700;margin-bottom:4px} .meta{font-size:11px;color:#111827;margin-bottom:10px} .section{margin-top:10px;padding-top:8px;border-top:1px solid #d1d5db} .label{font-size:11px;font-weight:700;color:#111827;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.03em} .value{font-size:12px;line-height:1.45}@media print{body{padding:0.3in}}</style></head><body><div class="wrap"><div class="title">${escapeHtml(data.name || 'Resume')}</div><div class="meta">${escapeHtml(contact)}</div>${sections}</div></body></html>`
-  }
-
-  if (template.id === 'modern-gold') {
-    const sections = buildDesignerSectionMarkup([
-      { label: 'Technical Skills', content: content.skills },
-      { label: 'Tools & Platforms', content: content.tools },
-      { label: 'Experience', content: content.experience },
-      { label: 'Projects', content: content.projects },
-      { label: 'Education', content: content.education },
-      { label: 'Languages', content: content.languages },
-    ])
-    return `<!DOCTYPE html><html><head><meta charset="utf-8" /><title>${escapeHtml(template.name)}</title><style>body{font-family:Inter,system-ui,sans-serif;padding:24px;background:#111827;color:#f8fafc} .wrap{max-width:900px;margin:0 auto;background:linear-gradient(135deg,#111827 0%,#1f2937 100%);border:1px solid rgba(245,158,11,0.35);padding:24px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.2)} .hero{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:14px;border-bottom:2px solid #fbbf24;margin-bottom:14px} .title{font-size:24px;font-weight:800} .meta{font-size:12px;color:#fcd34d;margin-top:4px} .summary{font-size:13px;line-height:1.55;color:#f8fafc;margin-bottom:14px} .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px} .card{background:rgba(255,255,255,0.06);padding:12px;border:1px solid rgba(245,158,11,0.2);border-radius:14px} .label{font-size:10px;text-transform:uppercase;letter-spacing:0.16em;font-weight:800;color:#fbbf24;margin-bottom:6px} .value{font-size:12px;line-height:1.5;color:#f8fafc}@media print{body{padding:0.3in}}</style></head><body><div class="wrap"><div class="hero"><div><div class="title">${escapeHtml(data.name || 'Resume')}</div><div class="meta">${escapeHtml(contact)}</div></div><div class="meta">${escapeHtml(template.name)}</div></div>${summary ? `<div class="summary">${escapeHtml(summary)}</div>` : ''}<div class="grid"><div class="card"><div class="label">Technical Skills</div><div class="value">${escapeHtml(content.skills)}</div></div><div class="card"><div class="label">Tools & Platforms</div><div class="value">${escapeHtml(content.tools)}</div></div></div><div class="grid" style="margin-top:12px"><div class="card"><div class="label">Experience</div><div class="value">${escapeHtml(content.experience)}</div></div><div class="card"><div class="label">Projects</div><div class="value">${escapeHtml(content.projects)}</div></div></div></div></body></html>`
-  }
-
-  if (template.id === 'modern-sidebar') {
-    const sidebarContent = buildDesignerSectionMarkup([
-      { label: 'Technical Skills', content: content.skills },
-      { label: 'Soft Skills', content: content.softSkills },
-      { label: 'Languages', content: content.languages },
-      { label: 'Tools & Platforms', content: content.tools },
-    ])
-    const mainContent = buildDesignerSectionMarkup([
-      { label: 'Experience', content: content.experience },
-      { label: 'Projects', content: content.projects },
-      { label: 'Education', content: content.education },
-      { label: 'Certificates & Awards', content: content.credentials },
-    ])
-    return `<!DOCTYPE html><html><head><meta charset="utf-8" /><title>${escapeHtml(template.name)}</title><style>body{font-family:Inter,system-ui,sans-serif;padding:24px;background:#f8fafc;color:#111827} .wrap{max-width:920px;margin:0 auto;display:grid;grid-template-columns:240px 1fr;background:#111827;color:#f8fafc;border-radius:20px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.15)} .sidebar{background:#fbbf24;padding:20px;color:#111827} .main{padding:24px 24px 24px 20px} .title{font-size:22px;font-weight:800;margin-bottom:6px} .meta{font-size:11px;line-height:1.45;color:#1f2937} .summary{font-size:13px;line-height:1.55;color:#f8fafc;margin-bottom:12px} .section{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.16)} .label{font-size:10px;text-transform:uppercase;letter-spacing:0.16em;font-weight:800;color:#fbbf24;margin-bottom:6px} .value{font-size:12px;line-height:1.5;color:#f8fafc}@media print{body{padding:0.3in}}</style></head><body><div class="wrap"><div class="sidebar"><div class="title">${escapeHtml(data.name || 'Resume')}</div><div class="meta">${escapeHtml(contact)}</div>${sidebarContent}</div><div class="main">${summary ? `<div class="summary">${escapeHtml(summary)}</div>` : ''}${mainContent}</div></div></body></html>`
-  }
-
-  if (template.id === 'modern-elegant') {
-    return `<!DOCTYPE html><html><head><meta charset="utf-8" /><title>${escapeHtml(template.name)}</title><style>body{font-family:Inter,system-ui,sans-serif;padding:24px;background:#fffbeb;color:#431407} .wrap{max-width:900px;margin:0 auto;background:#ffffff;border:1px solid #fde68a;padding:24px;border-radius:20px;box-shadow:0 10px 26px rgba(0,0,0,0.08)} .hero{display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:2px solid #f59e0b;margin-bottom:12px} .title{font-size:24px;font-weight:800} .meta{font-size:12px;color:#9a2c00;margin-top:4px} .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:#fef3c7;color:#92400e;font-size:11px;font-weight:700} .card{margin-top:10px;padding:12px;border:1px solid #fef3c7;border-left:4px solid #f59e0b;background:#fffbeb;border-radius:14px} .label{font-size:10px;text-transform:uppercase;letter-spacing:0.16em;font-weight:800;color:#92400e;margin-bottom:6px} .value{font-size:12px;line-height:1.5;color:#431407}@media print{body{padding:0.3in}}</style></head><body><div class="wrap"><div class="hero"><div><div class="title">${escapeHtml(data.name || 'Resume')}</div><div class="meta">${escapeHtml(contact)}</div></div><div class="pill">${escapeHtml(template.name)}</div></div><div class="card"><div class="label">Summary</div><div class="value">${escapeHtml(summary)}</div></div><div class="card"><div class="label">Technical Skills</div><div class="value">${escapeHtml(content.skills)}</div></div><div class="card"><div class="label">Experience</div><div class="value">${escapeHtml(content.experience || content.projects)}</div></div></div></body></html>`
-  }
-
-  if (template.id === 'professional-corporate') {
-    const sections = buildDesignerSectionMarkup([
-      { label: 'Experience', content: content.experience },
-      { label: 'Technical Skills', content: content.skills },
-      { label: 'Education', content: content.education },
-      { label: 'Projects', content: content.projects },
-      { label: 'Certificates & Awards', content: content.credentials },
-    ])
-    return `<!DOCTYPE html><html><head><meta charset="utf-8" /><title>${escapeHtml(template.name)}</title><style>body{font-family:Georgia,Times New Roman,serif;padding:24px;background:#f8fafc;color:#334155} .wrap{max-width:900px;margin:0 auto;background:#f8fafc;border:1px solid #cbd5e1;padding:28px;border-radius:18px} .hero{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:12px;border-bottom:2px solid #334155;margin-bottom:12px} .title{font-size:24px;font-weight:800;color:#0f172a} .meta{font-size:12px;color:#475569;margin-top:4px} .summary{font-size:13px;line-height:1.55;color:#334155;margin-bottom:14px} .section{margin-top:12px;padding-top:10px;border-top:1px solid #cbd5e1} .label{font-size:10px;text-transform:uppercase;letter-spacing:0.16em;font-weight:800;color:#334155;margin-bottom:6px} .value{font-size:12px;line-height:1.5;color:#334155}@media print{body{padding:0.3in}}</style></head><body><div class="wrap"><div class="hero"><div><div class="title">${escapeHtml(data.name || 'Resume')}</div><div class="meta">${escapeHtml(contact)}</div></div><div class="meta">${escapeHtml(template.name)}</div></div>${summary ? `<div class="summary">${escapeHtml(summary)}</div>` : ''}${sections}</div></body></html>`
-  }
-
-  if (template.id === 'professional-executive') {
-    return `<!DOCTYPE html><html><head><meta charset="utf-8" /><title>${escapeHtml(template.name)}</title><style>body{font-family:Inter,system-ui,sans-serif;padding:24px;background:#0f172a;color:#f8fafc} .wrap{max-width:900px;margin:0 auto;background:#111827;border:1px solid rgba(245,158,11,0.25);padding:24px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,0.2)} .hero{padding:14px 16px;border-left:4px solid #f59e0b;background:#1f2937;margin-bottom:14px} .title{font-size:26px;font-weight:800} .meta{font-size:12px;color:#cbd5e1;margin-top:4px} .summary{font-size:13px;line-height:1.55;color:#f8fafc;margin:0 0 14px 0;padding:10px 12px;border-left:4px solid #b45309;background:#1f2937} .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px} .card{background:#f8fafc;color:#111827;padding:10px 12px;border-radius:12px} .label{font-size:10px;text-transform:uppercase;letter-spacing:0.16em;font-weight:800;color:#b45309;margin-bottom:6px} .value{font-size:12px;line-height:1.5;color:#111827}@media print{body{padding:0.3in}}</style></head><body><div class="wrap"><div class="hero"><div class="title">${escapeHtml(data.name || 'Resume')}</div><div class="meta">${escapeHtml(contact)}</div></div>${summary ? `<div class="summary">${escapeHtml(summary)}</div>` : ''}<div class="grid"><div class="card"><div class="label">Experience</div><div class="value">${escapeHtml(content.experience)}</div></div><div class="card"><div class="label">Technical Skills</div><div class="value">${escapeHtml(content.skills)}</div></div></div></div></body></html>`
-  }
-
-  if (template.id === 'professional-minimal') {
-    const sections = buildDesignerSectionMarkup([
-      { label: 'Technical Skills', content: content.skills },
-      { label: 'Experience', content: content.experience },
-      { label: 'Projects', content: content.projects },
-      { label: 'Education', content: content.education },
-      { label: 'Certificates & Awards', content: content.credentials },
-    ])
-    return `<!DOCTYPE html><html><head><meta charset="utf-8" /><title>${escapeHtml(template.name)}</title><style>body{font-family:Inter,system-ui,sans-serif;padding:24px;background:#f8fafc;color:#0f172a} .wrap{max-width:900px;margin:0 auto;background:#ffffff;border:1px solid #e2e8f0;padding:24px;border-radius:16px} .hero{padding-bottom:10px;border-bottom:1px solid #cbd5e1;margin-bottom:12px} .title{font-size:22px;font-weight:700} .meta{font-size:12px;color:#64748b;margin-top:4px} .summary{font-size:13px;line-height:1.55;color:#0f172a;margin-bottom:12px} .section{margin-top:10px;padding:10px;border:1px solid #f1f5f9;background:#fcfdff;border-radius:10px} .label{font-size:10px;text-transform:uppercase;letter-spacing:0.16em;font-weight:800;color:#0f172a;margin-bottom:4px} .value{font-size:12px;line-height:1.5;color:#0f172a}@media print{body{padding:0.3in}}</style></head><body><div class="wrap"><div class="hero"><div class="title">${escapeHtml(data.name || 'Resume')}</div><div class="meta">${escapeHtml(contact)}</div></div>${summary ? `<div class="summary">${escapeHtml(summary)}</div>` : ''}${sections}</div></body></html>`
-  }
-
-  return ''
-}
-
-function downloadDesignerPdf(template: DesignerTemplate, data: ResumeDesignerData) {
-  const html = renderDesignerHtml(template, data)
-  const win = window.open('about:blank', '_blank')
-  if (!win) {
-    const blob = new Blob([html], { type: 'text/html' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${template.id}.html`
-    document.body.appendChild(a)
-    a.click()
-    a.remove()
-    URL.revokeObjectURL(url)
-    return
-  }
-
-  win.document.open()
-  win.document.write(html)
-  win.document.close()
-  win.focus()
-  setTimeout(() => win.print(), 220)
-}
-
-function renderPreviewSections(
-  sections: Array<{ label: string; content: string }>,
-  blockClass = 'designerPreviewSectionBlock',
-  containerClass = 'designerPreviewSectionList'
-) {
-  const visibleSections = sections.filter(({ content }) => content)
-  if (!visibleSections.length) return null
-
-  return (
-    <div className={containerClass}>
-      {visibleSections.map((section) => (
-        <div className={blockClass} key={section.label}>
-          <div className="designerPreviewSectionTitle">{section.label}</div>
-          <div className="designerPreviewList">{section.content}</div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-function DesignerPreviewCard({ template, data }: DesignerTemplatePreview) {
-  const baseClass = `designerPreviewCanvas designerPreviewCanvas--${template.style} designerPreviewCanvas--${template.id}`
-  const content = buildDesignerContent(data)
-
-  if (template.style === 'basic') {
-    if (template.id === 'basic-compact') {
-      return (
-        <div className={baseClass}>
-          <div className="designerPreviewHeaderCompact">
-            <div>
-              <div className="designerPreviewName">{data.name || 'Your Name'}</div>
-              <div className="designerPreviewMeta">{data.contact.slice(0, 2).join(' • ') || 'Contact details'}</div>
-            </div>
-            <div className="designerPreviewTag">{template.name}</div>
-          </div>
-          {renderPreviewSections([
-            { label: 'Summary', content: content.summary },
-            { label: 'Technical Skills', content: content.skills },
-            { label: 'Experience', content: content.experience },
-            { label: 'Projects', content: content.projects },
-          ], 'designerPreviewMiniSection', 'designerPreviewSectionList designerPreviewSectionList--compact')}
-        </div>
-      )
-    }
-
-    if (template.id === 'basic-ats') {
-      return (
-        <div className={baseClass}>
-          <div className="designerPreviewHeader">
-            <div>
-              <div className="designerPreviewName">{data.name || 'Your Name'}</div>
-              <div className="designerPreviewMeta">{data.contact.slice(0, 2).join(' • ') || 'Contact details'}</div>
-            </div>
-            <div className="designerPreviewTag">{template.name}</div>
-          </div>
-          {renderPreviewSections([
-            { label: 'Professional Summary', content: content.summary },
-            { label: 'Technical Skills', content: content.skills },
-            { label: 'Tools & Platforms', content: content.tools },
-          ], 'designerPreviewMiniSection', 'designerPreviewSectionList')}
-        </div>
-      )
-    }
-
-    return (
-      <div className={baseClass}>
-        <div className="designerPreviewHeader">
-          <div>
-            <div className="designerPreviewName">{data.name || 'Your Name'}</div>
-            <div className="designerPreviewMeta">{data.contact.slice(0, 2).join(' • ') || 'Contact details'}</div>
-          </div>
-          <div className="designerPreviewTag">{template.name}</div>
-        </div>
-        <div className="designerPreviewSummary">{content.summary || 'Professional summary appears here.'}</div>
-        {renderPreviewSections([
-          { label: 'Experience', content: content.experience },
-          { label: 'Education', content: content.education },
-          { label: 'Certificates & Awards', content: content.credentials },
-        ])}
-      </div>
-    )
-  }
-
-  if (template.style === 'modern') {
-    if (template.id === 'modern-sidebar') {
-      return (
-        <div className={baseClass}>
-          <div className="designerPreviewSidebar">
-            <div className="designerPreviewName">{data.name || 'Your Name'}</div>
-            <div className="designerPreviewMeta">{data.contact.slice(0, 2).join(' • ') || 'Contact details'}</div>
-            <div className="designerPreviewSectionTitle">Skills</div>
-            <div className="designerPreviewPills">{content.skills || 'Skills'}</div>
-            <div className="designerPreviewSectionTitle">Tools</div>
-            <div className="designerPreviewPills">{content.tools || 'Tools'}</div>
-          </div>
-          <div className="designerPreviewMain">
-            <div className="designerPreviewTag">{template.name}</div>
-            <div className="designerPreviewSummary">{content.summary || 'Summary'}</div>
-            {renderPreviewSections([
-              { label: 'Experience', content: content.experience },
-              { label: 'Projects', content: content.projects },
-              { label: 'Education', content: content.education },
-            ], 'designerPreviewSectionBlock', 'designerPreviewSectionList')}
-          </div>
-        </div>
-      )
-    }
-
-    if (template.id === 'modern-elegant') {
-      return (
-        <div className={baseClass}>
-          <div className="designerPreviewHeader">
-            <div>
-              <div className="designerPreviewName">{data.name || 'Your Name'}</div>
-              <div className="designerPreviewMeta">{data.contact.slice(0, 2).join(' • ') || 'Contact details'}</div>
-            </div>
-            <div className="designerPreviewTag">{template.name}</div>
-          </div>
-          <div className="designerPreviewCardRow">
-            <div className="designerPreviewCardPane">
-              <div className="designerPreviewSectionTitle">Summary</div>
-              <div className="designerPreviewList">{content.summary || 'Summary'}</div>
-            </div>
-            <div className="designerPreviewCardPane">
-              <div className="designerPreviewSectionTitle">Technical Skills</div>
-              <div className="designerPreviewList">{content.skills || 'Skills'}</div>
-            </div>
-          </div>
-          <div className="designerPreviewCardRow">
-            <div className="designerPreviewCardPane">
-              <div className="designerPreviewSectionTitle">Experience</div>
-              <div className="designerPreviewList">{content.experience || 'Experience'}</div>
-            </div>
-            <div className="designerPreviewCardPane">
-              <div className="designerPreviewSectionTitle">Projects</div>
-              <div className="designerPreviewList">{content.projects || 'Projects'}</div>
-            </div>
-          </div>
-        </div>
-      )
-    }
-
-    return (
-      <div className={baseClass}>
-        <div className="designerPreviewHeader">
-          <div>
-            <div className="designerPreviewName">{data.name || 'Your Name'}</div>
-            <div className="designerPreviewMeta">{data.contact.slice(0, 2).join(' • ') || 'Contact details'}</div>
-          </div>
-          <div className="designerPreviewTag">{template.name}</div>
-        </div>
-        <div className="designerPreviewAccentBar" />
-        <div className="designerPreviewSummary">{content.summary || 'Summary'}</div>
-        <div className="designerPreviewPills">{content.skills || 'Skills'}</div>
-        {renderPreviewSections([
-          { label: 'Experience', content: content.experience },
-          { label: 'Projects', content: content.projects },
-          { label: 'Tools & Platforms', content: content.tools },
-        ], 'designerPreviewSectionBlock', 'designerPreviewSectionList designerPreviewSectionList--compact')}
-      </div>
-    )
-  }
-
-  if (template.style === 'professional') {
-    if (template.id === 'professional-executive') {
-      return (
-        <div className={baseClass}>
-          <div className="designerPreviewHeaderDesigner">
-            <div>
-              <div className="designerPreviewName">{data.name || 'Your Name'}</div>
-              <div className="designerPreviewMeta">{data.contact.slice(0, 2).join(' • ') || 'Contact details'}</div>
-            </div>
-            <div className="designerPreviewTag">{template.name}</div>
-          </div>
-          <div className="designerPreviewSummary">{content.summary || 'Summary'}</div>
-          {renderPreviewSections([
-            { label: 'Experience', content: content.experience },
-            { label: 'Technical Skills', content: content.skills },
-            { label: 'Education', content: content.education },
-          ], 'designerPreviewSectionBlock', 'designerPreviewSectionList designerPreviewSectionList--compact')}
-        </div>
-      )
-    }
-
-    if (template.id === 'professional-minimal') {
-      return (
-        <div className={baseClass}>
-          <div className="designerPreviewHeaderDesigner">
-            <div>
-              <div className="designerPreviewName">{data.name || 'Your Name'}</div>
-              <div className="designerPreviewMeta">{data.contact.slice(0, 2).join(' • ') || 'Contact details'}</div>
-            </div>
-            <div className="designerPreviewTag">{template.name}</div>
-          </div>
-          <div className="designerPreviewPanelList">
-            <div className="designerPreviewSectionBlock">
-              <div className="designerPreviewSectionTitle">Summary</div>
-              <div className="designerPreviewList">{content.summary || 'Summary'}</div>
-            </div>
-            {renderPreviewSections([
-              { label: 'Experience', content: content.experience },
-              { label: 'Certificates', content: content.credentials },
-            ], 'designerPreviewSectionBlock', 'designerPreviewSectionList')}
-          </div>
-        </div>
-      )
-    }
-
-    return (
-      <div className={baseClass}>
-        <div className="designerPreviewHeaderDesigner">
-          <div>
-            <div className="designerPreviewName">{data.name || 'Your Name'}</div>
-            <div className="designerPreviewMeta">{data.contact.slice(0, 2).join(' • ') || 'Contact details'}</div>
-          </div>
-          <div className="designerPreviewTag">{template.name}</div>
-        </div>
-        <div className="designerPreviewDivider" />
-        <div className="designerPreviewSummary">{content.summary || 'Summary'}</div>
-        {renderPreviewSections([
-          { label: 'Experience', content: content.experience },
-          { label: 'Education', content: content.education },
-          { label: 'Projects', content: content.projects },
-        ], 'designerPreviewSectionBlock', 'designerPreviewSectionList designerPreviewSectionList--compact')}
-      </div>
-    )
-  }
-
-  return (
-    <div className={baseClass}>
-      <div className="designerPreviewHeader">
-        <div>
-          <div className="designerPreviewName">{data.name || 'Your Name'}</div>
-          <div className="designerPreviewMeta">{data.contact.slice(0, 2).join(' • ') || 'Contact details'}</div>
-        </div>
-        <div className="designerPreviewTag">{template.name}</div>
-      </div>
-      <div className="designerPreviewSummary">{content.summary || 'Summary'}</div>
-      {renderPreviewSections([
-        { label: 'Technical Skills', content: content.skills },
-        { label: 'Experience', content: content.experience },
-        { label: 'Projects', content: content.projects },
-      ], 'designerPreviewSectionBlock', 'designerPreviewSectionList designerPreviewSectionList--compact')}
-    </div>
-  )
 }
 
 export default function App() {
@@ -530,13 +129,6 @@ export default function App() {
   const [chatLoading, setChatLoading] = useState(false)
   const [chatError, setChatError] = useState<string | null>(null)
   const [copiedMessageKey, setCopiedMessageKey] = useState<string | null>(null)
-
-  const [designerFile, setDesignerFile] = useState<File | null>(null)
-  const [selectedStyle, setSelectedStyle] = useState<DesignerStyle>('basic')
-  const [generatedTemplates, setGeneratedTemplates] = useState<Array<DesignerTemplatePreview>>([])
-  const [designerLoading, setDesignerLoading] = useState(false)
-  const [designerError, setDesignerError] = useState<string | null>(null)
-  const [designerPreview, setDesignerPreview] = useState<DesignerTemplatePreview | null>(null)
 
   const [interviewQuestions, setInterviewQuestions] = useState<InterviewQuestionsResponse | null>(null)
   const [mockInterviewStarted, setMockInterviewStarted] = useState(false)
@@ -566,6 +158,7 @@ export default function App() {
   const [resumeQuizSubmitted, setResumeQuizSubmitted] = useState(false)
   const [resumeQuizScore, setResumeQuizScore] = useState<number | null>(null)
   const [resumeQuizFeedback, setResumeQuizFeedback] = useState<Record<number, string>>({})
+  const [learningHubLesson, setLearningHubLesson] = useState<string | null>(null)
 
   const activeQuizCategoryLabel = QUIZ_CATEGORIES.find((category) => category.key === resumeQuizCategory)?.label ?? 'Not selected'
   const activeQuizDifficultyLabel = QUIZ_DIFFICULTIES.find((difficulty) => difficulty.key === resumeQuizDifficulty)?.label ?? 'Not selected'
@@ -576,7 +169,6 @@ export default function App() {
   const analyzerInputRef = useRef<HTMLInputElement | null>(null)
   const coverLetterInputRef = useRef<HTMLInputElement | null>(null)
   const chatInputRef = useRef<HTMLInputElement | null>(null)
-  const designerInputRef = useRef<HTMLInputElement | null>(null)
 
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<AnalyzeResponse | null>(null)
@@ -597,14 +189,6 @@ export default function App() {
         '💬 Preparing your answer...',
         '🧠 Reviewing your resume context...',
         '✦ Crafting practical guidance...',
-      ]
-    }
-
-    if (activeMode === 'designer') {
-      return [
-        '🧾 Extracting your resume content...',
-        '🧱 Building professional layouts...',
-        '✦ Styling your resume previews...',
       ]
     }
 
@@ -654,15 +238,8 @@ export default function App() {
     setInterviewQuestions(null)
     setFile(null)
     setCoverLetterFile(null)
-    setDesignerFile(null)
-    setSelectedStyle('basic')
-    setGeneratedTemplates([])
-    setDesignerLoading(false)
-    setDesignerError(null)
-    setDesignerPreview(null)
     resetFileInput(analyzerInputRef)
     resetFileInput(coverLetterInputRef)
-    resetFileInput(designerInputRef)
     setMockInterviewStarted(false)
     setMockInterviewCompleted(false)
     setMockInterviewQuestionIndex(0)
@@ -681,6 +258,7 @@ export default function App() {
     setResumeQuizSubmitted(false)
     setResumeQuizScore(null)
     setResumeQuizFeedback({})
+    setLearningHubLesson(null)
     setMobileMenuOpen(false)
   }
 
@@ -724,19 +302,6 @@ export default function App() {
     setCopyState('idle')
     setLoading(false)
     resetFileInput(coverLetterInputRef)
-  }
-
-  function clearDesignerState() {
-    setDesignerFile(null)
-    setSelectedStyle('basic')
-    setGeneratedTemplates([])
-    setDesignerLoading(false)
-    setDesignerError(null)
-    setDesignerPreview(null)
-    setError(null)
-    setCopyState('idle')
-    setLoading(false)
-    resetFileInput(designerInputRef)
   }
 
   function clearChatState() {
@@ -907,37 +472,6 @@ export default function App() {
     await runAnalyzerFlow()
   }
 
-  async function onGenerateDesignerTemplates(e?: React.FormEvent) {
-    e?.preventDefault()
-    if (activeMode !== 'designer') return
-
-    setDesignerError(null)
-    setGeneratedTemplates([])
-    setDesignerPreview(null)
-
-    if (!designerFile) {
-      setDesignerError('Upload a PDF resume first.')
-      return
-    }
-
-    setDesignerLoading(true)
-    setLoading(true)
-    try {
-      const data = await generateResumeDesignerData({ file: designerFile })
-      const templates = DESIGNER_TEMPLATES[selectedStyle].map((item) => ({
-        template: { id: item.id, name: item.name, style: selectedStyle },
-        data,
-      }))
-      setGeneratedTemplates(templates)
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Designer generation failed'
-      setDesignerError(msg)
-    } finally {
-      setDesignerLoading(false)
-      setLoading(false)
-    }
-  }
-
   async function requestCoverLetterGeneration() {
     if (activeMode !== 'coverLetter') return
 
@@ -1066,7 +600,6 @@ export default function App() {
   const hasCoverLetterText = Boolean(coverLetterOutput.trim())
   const hasInterviewQuestions = Boolean(interviewQuestions?.categories?.some((category) => category.questions?.length))
   const hasAnalyzerResults = Boolean(result || hasRewriteText || hasInterviewQuestions)
-  const hasDesignerTemplates = generatedTemplates.length > 0
 
   const interviewQuestionBank = useMemo(() => {
     if (!interviewQuestions?.categories?.length) return [] as Array<{ category: string; question: string; answer: string }>
@@ -1138,6 +671,7 @@ export default function App() {
 
   const signals = result?.ats_score.signals
   const aiSuggestions = result?.ai_suggestions ?? []
+  const currentLearningHubCategory = LEARNING_HUB_CATEGORIES.find((category) => category.key === learningHubLesson) ?? null
   const coloredPills = missingSkills.map((s, i) => ({
     text: s,
     color:
@@ -1195,15 +729,6 @@ export default function App() {
 
           <button
             type="button"
-            className={`sidebarItem ${activeMode === 'designer' ? 'active' : ''}`}
-            onClick={() => switchMode('designer')}
-          >
-            <span className="sidebarIcon">🎨</span>
-            <span className="sidebarItemText">Resume Designer</span>
-          </button>
-
-          <button
-            type="button"
             className={`sidebarItem ${activeMode === 'coverLetter' ? 'active' : ''}`}
             onClick={() => switchMode('coverLetter')}
           >
@@ -1218,6 +743,15 @@ export default function App() {
           >
             <span className="sidebarIcon">🧠</span>
             <span className="sidebarItemText">Resume Quiz</span>
+          </button>
+
+          <button
+            type="button"
+            className={`sidebarItem ${activeMode === 'learningHub' ? 'active' : ''}`}
+            onClick={() => switchMode('learningHub')}
+          >
+            <span className="sidebarIcon">📚</span>
+            <span className="sidebarItemText">Resume Learning Hub</span>
           </button>
         </nav>
 
@@ -1237,10 +771,10 @@ export default function App() {
                   ? 'Chat with an AI assistant for resume, career, ATS, cover letter, and interview guidance.'
                   : activeMode === 'analyzer'
                     ? 'Upload a PDF resume to generate a complete AI career report with analysis, rewrite, and interview questions.'
-                    : activeMode === 'designer'
-                      ? 'Transform your existing resume into multiple professional resume designs.'
-                      : activeMode === 'resumeQuiz'
-                        ? 'Test your resume knowledge with a structured quiz of common resume best practices.'
+                    : activeMode === 'resumeQuiz'
+                      ? 'Test your resume knowledge with a structured quiz of common resume best practices.'
+                      : activeMode === 'learningHub'
+                        ? 'Learn the fundamentals of creating professional resumes and preparing for your career through structured learning guides.'
                         : 'Create a tailored cover letter from your resume and a specific job description.'}
               </p>
             </div>
@@ -1266,10 +800,10 @@ export default function App() {
                   ? 'Ready for chat'
                   : activeMode === 'analyzer'
                     ? 'Ready for analysis'
-                    : activeMode === 'designer'
-                      ? 'Ready for designs'
-                      : activeMode === 'resumeQuiz'
-                        ? 'Ready for the resume quiz'
+                    : activeMode === 'resumeQuiz'
+                      ? 'Ready for the resume quiz'
+                      : activeMode === 'learningHub'
+                        ? 'Ready for learning'
                         : 'Ready for cover letter'}
             </div>
           </div>
@@ -1946,88 +1480,6 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
               </div>
             ) : null}
           </>
-        ) : activeMode === 'designer' ? (
-          <div className="grid columns2" style={{ marginTop: 0, gap: 16 }}>
-            <div className="card">
-              <div className="cardTitle">🎨 Resume Designer</div>
-              <div className="muted2" style={{ marginBottom: 14 }}>
-                Upload a PDF resume and generate fully local, style-based resume layouts without AI.
-              </div>
-
-              <label className="label">Resume PDF</label>
-              <div className="uploadZone" role="button" tabIndex={0}>
-                <input
-                  ref={designerInputRef}
-                  type="file"
-                  accept="application/pdf"
-                  onChange={(ev) => {
-                    setDesignerFile(ev.target.files?.[0] ?? null)
-                    resetFileInput(designerInputRef)
-                  }}
-                />
-                <div className="uploadIcon">⤒</div>
-                <div className="uploadText">Upload file</div>
-                <div className="uploadSub">or drag & drop</div>
-                {designerFile ? <div className="uploadFileName">{designerFile.name}</div> : null}
-              </div>
-
-              <label className="label">Choose a style family</label>
-              <div className="designerStyleRow">
-                {(['basic', 'modern', 'professional'] as DesignerStyle[]).map((style) => (
-                  <button
-                    key={style}
-                    type="button"
-                    className={`designerStyleCard ${selectedStyle === style ? 'active' : ''}`}
-                    onClick={() => setSelectedStyle(style)}
-                  >
-                    <div className="designerStyleTitle">
-                      {style === 'basic' ? 'Basic' : style === 'modern' ? 'Modern' : 'Professional'}
-                    </div>
-                    <div className="designerStyleSub">
-                      {style === 'basic' ? 'Clean ATS-friendly layouts' : style === 'modern' ? 'Polished, fresh presentation' : 'Executive-level structure'}
-                    </div>
-                  </button>
-                ))}
-              </div>
-
-              <div className="rewriteActions" style={{ marginTop: 12 }}>
-                <button className="button" type="button" onClick={() => void onGenerateDesignerTemplates()} disabled={designerLoading || !designerFile}>
-                  {designerLoading ? 'Generating…' : 'Generate Designs'}
-                </button>
-                <button className="buttonSmall" type="button" onClick={clearDesignerState} disabled={designerLoading}>
-                  Clear All
-                </button>
-              </div>
-
-              {designerError ? <div className="error">{designerError}</div> : null}
-              {hasDesignerTemplates && !designerError ? <div className="success">Designer templates generated.</div> : null}
-            </div>
-
-            <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div className="cardTitle">🧱 Generated templates</div>
-              {generatedTemplates.length ? (
-                <div className="designerList">
-                  {generatedTemplates.map((item) => (
-                    <div key={item.template.id} className="designerTemplateCard">
-                      <DesignerPreviewCard template={item.template} data={item.data} />
-                      <div className="designerTemplateActions">
-                        <button type="button" className="buttonSmall" onClick={() => setDesignerPreview(item)}>
-                          Preview
-                        </button>
-                        <button type="button" className="buttonSmall" onClick={() => downloadDesignerPdf(item.template, item.data)}>
-                          Download
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="muted2">
-                  Upload a resume and generate templates to see local preview cards here.
-                </div>
-              )}
-            </div>
-          </div>
         ) : activeMode === 'resumeQuiz' ? (
           <div className="resumeQuizLayout">
             <div className="card resumeQuizMainCard">
@@ -2196,6 +1648,68 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
               </div>
             </div>
           </div>
+        ) : activeMode === 'learningHub' ? (
+          learningHubLesson ? (
+            learningHubLesson === 'resume-sections' ? (
+              <ResumeSections
+                onBack={() => setLearningHubLesson(null)}
+                onOpenAnalyzer={() => switchMode('analyzer')}
+              />
+            ) : (
+              <div className="card" style={{ maxWidth: 1400, margin: '0 auto', padding: 24 }}>
+                <button
+                  type="button"
+                  className="buttonSmall"
+                  onClick={() => setLearningHubLesson(null)}
+                  style={{ marginBottom: 16 }}
+                >
+                  ← Back to Learning Hub
+                </button>
+
+                <div className="learningHubLesson">
+                  <div className="learningHubLessonMeta">
+                    <div className="learningHubLessonIcon">{currentLearningHubCategory?.icon ?? '📘'}</div>
+                    <div>
+                      <div className="muted2">Resume Learning Hub</div>
+                      <h2 className="learningHubLessonTitle">{currentLearningHubCategory?.title ?? 'Lesson'}</h2>
+                    </div>
+                  </div>
+
+                  <div className="learningHubLessonBody">
+                    <p>Lesson content coming soon.</p>
+                  </div>
+                </div>
+              </div>
+            )
+          ) : (
+            <div style={{ maxWidth: 1400, margin: '0 auto' }}>
+              <div className="card" style={{ padding: 24 }}>
+                <div className="cardTitle">📚 Resume Learning Hub</div>
+                <div className="muted2" style={{ marginBottom: 18, maxWidth: 760 }}>
+                  Learn the fundamentals of creating professional resumes and preparing for your career through structured learning guides.
+                </div>
+
+                <div className="learningHubGrid">
+                  {LEARNING_HUB_CATEGORIES.map((category) => (
+                    <div key={category.key} className="card learningHubCategoryCard">
+                      <div className="learningHubCategoryIcon">{category.icon}</div>
+                      <div className="cardTitle" style={{ marginBottom: 8 }}>{category.title}</div>
+                      <div className="muted2" style={{ marginBottom: 16 }}>
+                        {category.description}
+                      </div>
+                      <button
+                        type="button"
+                        className="buttonSmall"
+                        onClick={() => setLearningHubLesson(category.key)}
+                      >
+                        Learn More →
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )
         ) : (
           <div className="grid columns2" style={{ marginTop: 0, gap: 16 }}>
             <form className="card" onSubmit={onGenerateCoverLetter}>
@@ -2328,36 +1842,6 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
           </div>
         )}
       </main>
-
-      {activeMode === 'designer' && designerPreview ? (
-        <div
-          style={{ position: 'fixed', inset: 0, background: 'rgba(2, 6, 23, 0.7)', backdropFilter: 'blur(6px)', zIndex: 1200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
-          onClick={() => setDesignerPreview(null)}
-        >
-          <div
-            className="card"
-            style={{ position: 'relative', width: 'min(92vw, 900px)', maxHeight: '90vh', overflowY: 'auto', padding: 24 }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              className="buttonSmall"
-              style={{ position: 'absolute', top: 12, right: 12 }}
-              onClick={() => setDesignerPreview(null)}
-            >
-              Close
-            </button>
-
-            <div className="cardTitle">🖼 Template preview</div>
-            <DesignerPreviewCard template={designerPreview.template} data={designerPreview.data} />
-            <div className="rewriteActions" style={{ marginTop: 14 }}>
-              <button type="button" className="button" onClick={() => downloadDesignerPdf(designerPreview.template, designerPreview.data)}>
-                Download Template
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
 
       {activeMode === 'analyzer' && mockInterviewModalOpen && mockInterviewStarted ? (
         <div
