@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { analyzeResume, generateCoverLetter, evaluateInterviewAnswer, generateInterviewQuestions, chatWithResume, generateResumeDesignerData } from './api/client'
 import type { AnalyzeResponse, InterviewEvaluationResponse, InterviewQuestionsResponse } from './api/types'
 import type { ResumeDesignerData } from './api/client'
+import { QUIZ_CATEGORIES, QUIZ_DIFFICULTIES, getQuizQuestions, type QuizCategory, type QuizDifficulty, type ResumeQuizQuestion } from './quizQuestions'
 
 function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n))
@@ -98,7 +99,7 @@ function downloadPdf(_filename: string, content: string, title = 'AI Resume Rewr
   setTimeout(() => win.print(), 200)
 }
 
-type Mode = 'chat' | 'analyzer' | 'designer' | 'coverLetter'
+type Mode = 'chat' | 'analyzer' | 'designer' | 'coverLetter' | 'resumeQuiz'
 type DesignerStyle = 'basic' | 'modern' | 'professional'
 type DesignerTemplate = {
   id: string
@@ -556,6 +557,22 @@ export default function App() {
   const [mockInterviewModalOpen, setMockInterviewModalOpen] = useState(false)
   const [revealedAnswers, setRevealedAnswers] = useState<Record<string, boolean>>({})
 
+  const [resumeQuizCategory, setResumeQuizCategory] = useState<QuizCategory | null>(null)
+  const [resumeQuizDifficulty, setResumeQuizDifficulty] = useState<QuizDifficulty | null>(null)
+  const [resumeQuizStarted, setResumeQuizStarted] = useState(false)
+  const [resumeQuizQuestions, setResumeQuizQuestions] = useState<ResumeQuizQuestion[]>([])
+  const [resumeQuizCurrentIndex, setResumeQuizCurrentIndex] = useState(0)
+  const [resumeQuizAnswers, setResumeQuizAnswers] = useState<Record<number, number>>({})
+  const [resumeQuizSubmitted, setResumeQuizSubmitted] = useState(false)
+  const [resumeQuizScore, setResumeQuizScore] = useState<number | null>(null)
+  const [resumeQuizFeedback, setResumeQuizFeedback] = useState<Record<number, string>>({})
+
+  const activeQuizCategoryLabel = QUIZ_CATEGORIES.find((category) => category.key === resumeQuizCategory)?.label ?? 'Not selected'
+  const activeQuizDifficultyLabel = QUIZ_DIFFICULTIES.find((difficulty) => difficulty.key === resumeQuizDifficulty)?.label ?? 'Not selected'
+  const currentResumeQuizQuestion = resumeQuizQuestions[resumeQuizCurrentIndex]
+  const answeredQuizQuestions = Object.keys(resumeQuizAnswers).length
+  const hasCurrentAnswer = typeof resumeQuizAnswers[currentResumeQuizQuestion?.id ?? -1] === 'number'
+
   const analyzerInputRef = useRef<HTMLInputElement | null>(null)
   const coverLetterInputRef = useRef<HTMLInputElement | null>(null)
   const chatInputRef = useRef<HTMLInputElement | null>(null)
@@ -655,6 +672,15 @@ export default function App() {
     setMockInterviewLoading(false)
     setMockInterviewModalOpen(false)
     setRevealedAnswers({})
+    setResumeQuizCategory(null)
+    setResumeQuizDifficulty(null)
+    setResumeQuizStarted(false)
+    setResumeQuizQuestions([])
+    setResumeQuizCurrentIndex(0)
+    setResumeQuizAnswers({})
+    setResumeQuizSubmitted(false)
+    setResumeQuizScore(null)
+    setResumeQuizFeedback({})
     setMobileMenuOpen(false)
   }
 
@@ -673,6 +699,15 @@ export default function App() {
     setMockInterviewLoading(false)
     setMockInterviewModalOpen(false)
     setRevealedAnswers({})
+    setResumeQuizCategory(null)
+    setResumeQuizDifficulty(null)
+    setResumeQuizStarted(false)
+    setResumeQuizQuestions([])
+    setResumeQuizCurrentIndex(0)
+    setResumeQuizAnswers({})
+    setResumeQuizSubmitted(false)
+    setResumeQuizScore(null)
+    setResumeQuizFeedback({})
     setError(null)
     setCopyState('idle')
     setLoading(false)
@@ -710,6 +745,77 @@ export default function App() {
     setChatError(null)
     setChatLoading(false)
     resetFileInput(chatInputRef)
+  }
+
+  function resetResumeQuiz() {
+    setResumeQuizCategory(null)
+    setResumeQuizDifficulty(null)
+    setResumeQuizStarted(false)
+    setResumeQuizQuestions([])
+    setResumeQuizCurrentIndex(0)
+    setResumeQuizAnswers({})
+    setResumeQuizSubmitted(false)
+    setResumeQuizScore(null)
+    setResumeQuizFeedback({})
+  }
+
+  function selectResumeQuizOption(questionId: number, optionIndex: number) {
+    if (resumeQuizSubmitted) return
+    setResumeQuizAnswers((prev) => ({ ...prev, [questionId]: optionIndex }))
+  }
+
+  function beginResumeQuiz() {
+    if (!resumeQuizCategory || !resumeQuizDifficulty) return
+    const questions = getQuizQuestions(resumeQuizCategory, resumeQuizDifficulty)
+    setResumeQuizQuestions(questions)
+    setResumeQuizStarted(true)
+    setResumeQuizCurrentIndex(0)
+    setResumeQuizAnswers({})
+    setResumeQuizSubmitted(false)
+    setResumeQuizScore(null)
+    setResumeQuizFeedback({})
+  }
+
+  function submitResumeQuiz() {
+    if (!resumeQuizStarted || resumeQuizSubmitted) return
+
+    const nextIndex = resumeQuizCurrentIndex + 1
+    if (nextIndex < resumeQuizQuestions.length) {
+      setResumeQuizCurrentIndex(nextIndex)
+      return
+    }
+
+    const correctCount = resumeQuizQuestions.reduce((count, question) => {
+      return count + (resumeQuizAnswers[question.id] === question.correctOptionIndex ? 1 : 0)
+    }, 0)
+
+    const feedback: Record<number, string> = {}
+    resumeQuizQuestions.forEach((question) => {
+      const chosenIndex = resumeQuizAnswers[question.id]
+      feedback[question.id] = chosenIndex === question.correctOptionIndex
+        ? 'Correct — ' + question.explanation
+        : `Incorrect — ${question.explanation}`
+    })
+
+    setResumeQuizScore(correctCount)
+    setResumeQuizFeedback(feedback)
+    setResumeQuizSubmitted(true)
+  }
+
+  function restartResumeQuiz() {
+    resetResumeQuiz()
+  }
+
+  function getResumeQuizProgress() {
+    return `${resumeQuizCurrentIndex + 1} / ${resumeQuizQuestions.length}`
+  }
+
+  function getResumeKnowledgeRating(score: number, total: number) {
+    const percent = total ? (score / total) * 100 : 0
+    if (percent >= 90) return 'Expert'
+    if (percent >= 75) return 'Strong'
+    if (percent >= 50) return 'Developing'
+    return 'Needs improvement'
   }
 
   async function copyMessageText(text: string, key: string) {
@@ -1104,6 +1210,15 @@ export default function App() {
             <span className="sidebarIcon">✉️</span>
             <span className="sidebarItemText">Cover Letter</span>
           </button>
+
+          <button
+            type="button"
+            className={`sidebarItem ${activeMode === 'resumeQuiz' ? 'active' : ''}`}
+            onClick={() => switchMode('resumeQuiz')}
+          >
+            <span className="sidebarIcon">🧠</span>
+            <span className="sidebarItemText">Resume Quiz</span>
+          </button>
         </nav>
 
         <div className="sidebarFooter">
@@ -1124,7 +1239,9 @@ export default function App() {
                     ? 'Upload a PDF resume to generate a complete AI career report with analysis, rewrite, and interview questions.'
                     : activeMode === 'designer'
                       ? 'Transform your existing resume into multiple professional resume designs.'
-                      : 'Create a tailored cover letter from your resume and a specific job description.'}
+                      : activeMode === 'resumeQuiz'
+                        ? 'Test your resume knowledge with a structured quiz of common resume best practices.'
+                        : 'Create a tailored cover letter from your resume and a specific job description.'}
               </p>
             </div>
           </div>
@@ -1151,7 +1268,9 @@ export default function App() {
                     ? 'Ready for analysis'
                     : activeMode === 'designer'
                       ? 'Ready for designs'
-                      : 'Ready for cover letter'}
+                      : activeMode === 'resumeQuiz'
+                        ? 'Ready for the resume quiz'
+                        : 'Ready for cover letter'}
             </div>
           </div>
         </div>
@@ -1907,6 +2026,174 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
                   Upload a resume and generate templates to see local preview cards here.
                 </div>
               )}
+            </div>
+          </div>
+        ) : activeMode === 'resumeQuiz' ? (
+          <div className="resumeQuizLayout">
+            <div className="card resumeQuizMainCard">
+              <div className="cardTitle">🧠 Resume Quiz</div>
+              <div className="muted2" style={{ marginBottom: 14 }}>
+                Answer resume best-practice questions locally. Pick a category and difficulty, then submit each answer to progress.
+              </div>
+
+              {!resumeQuizStarted ? (
+                <div className="resumeQuizSetupStack">
+                  <div className="card resumeQuizSetupCard">
+                    <div className="muted2">Select a category</div>
+                    <div className="resumeQuizChoiceGrid resumeQuizChoiceGrid--categories">
+                      {QUIZ_CATEGORIES.map((category) => {
+                        const isActive = resumeQuizCategory === category.key
+                        return (
+                          <button
+                            key={category.key}
+                            type="button"
+                            className={`resumeQuizOptionCard buttonSmall ${isActive ? 'active' : ''}`}
+                            onClick={() => setResumeQuizCategory(category.key)}
+                          >
+                            <div className="resumeQuizOptionTitle">{category.label}</div>
+                            <div className="resumeQuizOptionHint">
+                              {category.key === 'mixed' ? 'Mixed difficulty mix' : 'Focused practice'}
+                            </div>
+                            {isActive ? <span className="resumeQuizOptionCheck">✓</span> : null}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="card resumeQuizSetupCard">
+                    <div className="muted2">Select a difficulty</div>
+                    <div className="resumeQuizChoiceGrid resumeQuizChoiceGrid--difficulty">
+                      {QUIZ_DIFFICULTIES.map((difficulty) => {
+                        const isActive = resumeQuizDifficulty === difficulty.key
+                        
+                        return (
+                          <button
+                            key={difficulty.key}
+                            type="button"
+                            className={`resumeQuizOptionCard buttonSmall ${isActive ? 'active' : ''}`}
+                            onClick={() => setResumeQuizDifficulty(difficulty.key)}
+                          >
+                            <div className="resumeQuizOptionTitle">{difficulty.label}</div>
+                          
+                            {isActive ? <span className="resumeQuizOptionCheck">✓</span> : null}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="rewriteActions" style={{ marginTop: 8, flexWrap: 'wrap' }}>
+                    <button
+                      className="button"
+                      type="button"
+                      onClick={beginResumeQuiz}
+                      disabled={!resumeQuizCategory || !resumeQuizDifficulty}
+                    >
+                      Begin Quiz
+                    </button>
+                    <button className="buttonSmall" type="button" onClick={resetResumeQuiz}>
+                      Clear All
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="resumeQuizFlow">
+                  <div className="resumeQuizQuestionHeader">
+                    <div>
+                      <div className="muted2">Question {getResumeQuizProgress()}</div>
+                      <div className="resumeQuizQuestionText">{currentResumeQuizQuestion?.question}</div>
+                    </div>
+                  </div>
+
+                  <div className="resumeQuizOptionList">
+                    {currentResumeQuizQuestion?.options.map((option, optionIndex) => {
+                      const selected = resumeQuizAnswers[currentResumeQuizQuestion.id] === optionIndex
+                      return (
+                        <button
+                          key={option}
+                          type="button"
+                          className={`resumeQuizOptionCard buttonSmall ${selected ? 'active' : ''}`}
+                          onClick={() => selectResumeQuizOption(currentResumeQuizQuestion.id, optionIndex)}
+                        >
+                          <span className="resumeQuizOptionLetter">{String.fromCharCode(65 + optionIndex)}</span>
+                          <span className="resumeQuizOptionLabel">{option}</span>
+                          {selected ? <span className="resumeQuizOptionCheck">✓</span> : null}
+                        </button>
+                      )
+                    })}
+                  </div>
+
+                  <div className="rewriteActions" style={{ marginTop: 16, flexWrap: 'wrap' }}>
+                    <button
+                      type="button"
+                      className="button"
+                      onClick={resumeQuizSubmitted ? restartResumeQuiz : submitResumeQuiz}
+                      disabled={!resumeQuizSubmitted && (!hasCurrentAnswer || resumeQuizSubmitted)}
+                    >
+                      {resumeQuizSubmitted ? 'Restart Quiz' : resumeQuizCurrentIndex < resumeQuizQuestions.length - 1 ? 'Submit Answer' : 'Finish Quiz'}
+                    </button>
+                  </div>
+
+                  {resumeQuizSubmitted ? (
+                    <div className="card resumeQuizResultsCard">
+                      <div className="resumeQuizResultsHeader">
+                        <div>
+                          <div className="muted2">Your score</div>
+                          <div className="resumeQuizScore">{resumeQuizScore}/{resumeQuizQuestions.length}</div>
+                        </div>
+                        <div className="resumeQuizRating">{getResumeKnowledgeRating(resumeQuizScore ?? 0, resumeQuizQuestions.length)}</div>
+                      </div>
+
+                      <div style={{ marginTop: 12 }}>
+                        <ul className="list">
+                          {resumeQuizQuestions.map((question) => {
+                            const answerIndex = resumeQuizAnswers[question.id]
+                            const label = answerIndex != null ? String.fromCharCode(65 + answerIndex) : '—'
+                            return (
+                              <li key={question.id} style={{ marginBottom: 14 }}>
+                                <div><strong>{question.question}</strong></div>
+                                <div className="muted2" style={{ margin: '4px 0' }}>
+                                  Your answer: {label}. {question.options[answerIndex ?? 0] ?? 'No answer selected'}
+                                </div>
+                                <div className="muted2">
+                                  {resumeQuizFeedback[question.id]}
+                                </div>
+                              </li>
+                            )
+                          })}
+                        </ul>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
+
+            <div className="card resumeQuizInfoCard">
+              <div className="cardTitle">Quiz overview</div>
+              <div className="muted2" style={{ marginBottom: 12 }}>
+                {resumeQuizStarted ? 'Track your progress and review your choices as you move through the quiz.' : 'Choose a focused topic and difficulty to start a local practice session.'}
+              </div>
+
+              <div className="resumeQuizInfoStack">
+                <div className="resumeQuizInfoItem">
+                  <div className="resumeQuizInfoLabel">Selected topic</div>
+                  <div className="resumeQuizInfoValue">{activeQuizCategoryLabel}</div>
+                </div>
+                <div className="resumeQuizInfoItem">
+                  <div className="resumeQuizInfoLabel">Selected difficulty</div>
+                  <div className="resumeQuizInfoValue">{activeQuizDifficultyLabel}</div>
+                </div>
+                <div className="resumeQuizInfoItem">
+                  <div className="resumeQuizInfoLabel">Questions</div>
+                  <div className="resumeQuizInfoValue">{resumeQuizStarted ? `${resumeQuizQuestions.length}` : 'Choose to begin'}</div>
+                </div>
+                <div className="resumeQuizInfoItem">
+                  <div className="resumeQuizInfoLabel">Answered</div>
+                  <div className="resumeQuizInfoValue">{resumeQuizStarted ? answeredQuizQuestions : '0'}</div>
+                </div>
+              </div>
             </div>
           </div>
         ) : (

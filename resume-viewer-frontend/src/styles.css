@@ -174,8 +174,8 @@ a { color: inherit; text-decoration: none; }
 .sidebarItem {
   width: 100%;
   min-width: 0;
-  border: 1px solid rgba(245,158,11,0.18);
-  background: rgba(245,158,11,0.06);
+  border: none;
+  background: none;
   color: rgba(241,245,249,0.92);
   border-radius: 16px;
   padding: 8px 5px;
@@ -189,15 +189,15 @@ a { color: inherit; text-decoration: none; }
 
 .sidebarItem:hover {
   transform: translateY(-1px);
-  border-color: rgba(245,158,11,0.55);
+  border-color: none;
   background: rgba(245,158,11,0.10);
   box-shadow: 0 12px 34px rgba(0,0,0,0.30);
 }
 
 .sidebarItem.active {
-  border-color: rgba(245,158,11,0.75);
-  background: linear-gradient(135deg, rgba(245,158,11,0.22), rgba(180,83,9,0.08));
-  box-shadow: 0 0 0 4px rgba(245,158,11,0.12), var(--glow-p);
+  border-color: none;
+  background: rgba(245,158,11,0.10);
+  
 }
 
 .sidebarIcon {
@@ -1080,6 +1080,238 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ── Button ─────────────────────────────── */
+.resumeQuizLayout {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.resumeQuizMainCard,
+.resumeQuizInfoCard {
+  min-width: 0;
+}
+
+.resumeQuizSetupStack {
+  display: grid;
+  gap: 18px;
+}
+
+.resumeQuizSetupCard {
+  padding: 18px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(245,158,11,0.18);
+}
+
+.resumeQuizChoiceGrid {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.resumeQuizChoiceGrid--categories {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.resumeQuizChoiceGrid--difficulty {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.resumeQuizOptionCard {
+  width: 100%;
+  justify-content: flex-start;
+  align-items: flex-start;
+  text-align: left;
+  padding: 14px;
+  gap: 8px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.resumeQuizOptionCard:hover:not(:disabled) {
+  transform: translateY(-2px);
+  border-color: rgba(245,158,11,0.7);
+  background: rgba(245,158,11,0.12);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.26);
+}
+
+.resumeQuizOptionCard.active {
+  border-color: rgba(245,158,11,0.92);
+  background: linear-gradient(135deg, rgba(245,158,11,0.24), rgba(180,83,9,0.14));
+  box-shadow: 0 0 0 3px rgba(245,158,11,0.18), 0 10px 24px rgba(0,0,0,0.24);
+}
+
+.resumeQuizOptionTitle {
+  font-weight: 800;
+  color: rgba(241,245,249,0.98);
+}
+
+.resumeQuizOptionHint {
+  color: var(--t3);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.resumeQuizOptionLetter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: rgba(245,158,11,0.16);
+  color: var(--p500);
+  font-weight: 900;
+  font-size: 12px;
+}
+
+.resumeQuizOptionLabel {
+  line-height: 1.4;
+}
+
+/* Ensure readable card sizes and wrapping for mobile/tablet */
+.resumeQuizOptionCard,
+.resumeQuizOptionCard.buttonSmall {
+  min-height: 7px;
+  padding: 14px 16px;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Stronger visual for selected state */
+.resumeQuizOptionCard.active {
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(245,158,11,0.92);
+  background: linear-gradient(135deg, rgba(245,158,11,0.20), rgba(180,83,9,0.10));
+  box-shadow: 0 6px 26px rgba(0,0,0,0.28), 0 0 0 3px rgba(245,158,11,0.12);
+}
+
+/* Desktop grid sizing: keep cards from shrinking too small */
+.resumeQuizChoiceGrid--categories {
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+}
+.resumeQuizChoiceGrid--difficulty {
+  grid-template-columns: repeat(3, minmax(140px, 1fr));
+}
+
+/* Responsive: tablet and below use single-column stacked cards */
+@media (max-width: 900px) {
+  .resumeQuizLayout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .resumeQuizChoiceGrid--categories,
+  .resumeQuizChoiceGrid--difficulty {
+    grid-template-columns: 1fr;
+  }
+
+  .resumeQuizOptionCard,
+  .resumeQuizOptionCard.buttonSmall {
+    width: 100%;
+    min-height: 64px;
+    padding: 12px 14px;
+  }
+
+  /* Make action buttons full width on small screens */
+  .rewriteActions .button,
+  .rewriteActions .buttonSmall {
+    width: 100%;
+  }
+}
+
+/* Very narrow screens: reduce padding but keep stacked layout */
+@media (max-width: 480px) {
+  .resumeQuizOptionCard,
+  .resumeQuizOptionCard.buttonSmall {
+    min-height: auto;
+    padding: 10px 12px;
+  }
+}
+.resumeQuizOptionCheck {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: var(--p500);
+  font-weight: 900;
+  font-size: 13px;
+}
+
+.resumeQuizFlow {
+  display: grid;
+  gap: 18px;
+}
+
+.resumeQuizQuestionHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.resumeQuizQuestionText {
+  font-weight: 800;
+  margin-top: 6px;
+  color: rgba(241,245,249,0.96);
+}
+
+.resumeQuizOptionList {
+  display: grid;
+  gap: 10px;
+}
+
+.resumeQuizInfoStack {
+  display: grid;
+  gap: 10px;
+}
+
+.resumeQuizInfoItem {
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  border: 1px solid rgba(245,158,11,0.18);
+  background: rgba(255,255,255,0.03);
+}
+
+.resumeQuizInfoLabel {
+  color: var(--t3);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.resumeQuizInfoValue {
+  margin-top: 4px;
+  font-weight: 800;
+  color: rgba(241,245,249,0.95);
+}
+
+.resumeQuizResultsCard {
+  padding: 16px;
+  background: rgba(255,255,255,0.04);
+}
+
+.resumeQuizResultsHeader {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.resumeQuizScore {
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.resumeQuizRating {
+  font-weight: 800;
+  color: var(--p500);
+}
+
 .button {
   margin-top: 18px;
   width: 100%;
