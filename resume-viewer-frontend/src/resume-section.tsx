@@ -25,15 +25,15 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
 
         <article className="learningHubArticleBody">
           <section className="learningHubSection">
-            <h3>📄 1. Contact Information</h3>
+            <h3>1. Contact Information</h3>
             <p>
               Include the basics that help recruiters reach you quickly. Make sure your contact details are easy to find and professional.
             </p>
             <div className="learningHubExampleBox">
               <strong>Example:</strong>
-              <div>Jonel Bryan T. Ablog</div>
-              <div>ablogjonelbryan@gmail.com | +63 976 101 6814 | Vigan City, Ilocos Sur</div>
-              <div>linkedin.com/in/jbtablog | github.com/username</div>
+              <div>John Dela Cruz</div>
+              <div>johndelacruz@gmail.com | +63 912 345 6789 | Manila City, Philippines</div>
+              <div>linkedin.com/in/johndelacruz | github.com/johndelacruz</div>
             </div>
             <ul className="learningHubChecklist">
               <li>Full name</li>
@@ -46,6 +46,8 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
             <p className="learningHubNote">Common mistakes include an unprofessional email, missing phone details, broken links, or too much personal information.</p>
           </section>
 
+          <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+
           <section className="learningHubSection">
             <h3>2. Professional Summary</h3>
             <p>
@@ -54,7 +56,7 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
             <div className="learningHubExampleBox">
               <strong>Good example:</strong>
               <div>
-                Motivated BSIT graduate with experience building web applications using React, FastAPI, Firebase, and JavaScript. Skilled in developing user-focused systems, integrating APIs, and creating practical software solutions. Seeking a junior developer role where I can contribute to real-world projects and continue growing as a full-stack developer.
+                Recent Information Technology graduate with a strong foundation in web development and data analysis. Skilled in React, TypeScript, and Python, with hands-on experience in building responsive web applications. Seeking to contribute technical expertise and problem-solving skills to a dynamic software development team.
               </div>
             </div>
             <div className="learningHubExampleBox">
@@ -68,6 +70,8 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
               <li>Avoid generic phrases</li>
             </ul>
           </section>
+
+          <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
 
           <section className="learningHubSection">
             <h3>3. Skills</h3>
@@ -87,6 +91,8 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
               <li>Avoid long random lists</li>
             </ul>
           </section>
+
+          <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
 
           <section className="learningHubSection">
             <h3>4. Projects</h3>
@@ -123,6 +129,8 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
             </ul>
           </section>
 
+          <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+
           <section className="learningHubSection">
             <h3>5. Education</h3>
             <p>
@@ -144,6 +152,8 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
             </ul>
           </section>
 
+          <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+
           <section className="learningHubSection">
             <h3>6. Experience / Internship / OJT</h3>
             <p>
@@ -152,7 +162,7 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
             <div className="learningHubExampleBox">
               <strong>Example bullet:</strong>
               <div>
-                Developed and maintained client websites using HTML, CSS, JavaScript, and Mobirise during OJT at CSA Business Consultancy.
+                Developed and maintained client websites using HTML, CSS, and JavaScript, during OJT at CSA Business Consultancy.
               </div>
             </div>
             <ul className="learningHubChecklist">
@@ -162,6 +172,8 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
               <li>Keep bullets concise</li>
             </ul>
           </section>
+
+          <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
 
           <section className="learningHubSection">
             <h3>7. Certifications and Seminars</h3>
@@ -182,6 +194,8 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
             </ul>
           </section>
 
+          <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+
           <section className="learningHubSection">
             <h3>8. Awards and Achievements</h3>
             <p>
@@ -194,53 +208,6 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
             </ul>
           </section>
 
-          <section className="learningHubSection">
-            <h3>9. Recommended Resume Order</h3>
-            <p>
-              The best section order depends on your experience level.
-            </p>
-            <div className="learningHubExampleBox">
-              <strong>For Fresh Graduates:</strong>
-              <ol className="learningHubChecklist" style={{ listStyle: 'decimal' }}>
-                <li>Contact Information</li>
-                <li>Professional Summary</li>
-                <li>Education</li>
-                <li>Skills</li>
-                <li>Projects</li>
-                <li>OJT / Internship</li>
-                <li>Certifications</li>
-                <li>Awards</li>
-              </ol>
-            </div>
-            <div className="learningHubExampleBox">
-              <strong>For Experienced Applicants:</strong>
-              <ol className="learningHubChecklist" style={{ listStyle: 'decimal' }}>
-                <li>Contact Information</li>
-                <li>Professional Summary</li>
-                <li>Work Experience</li>
-                <li>Skills</li>
-                <li>Projects</li>
-                <li>Education</li>
-                <li>Certifications</li>
-              </ol>
-            </div>
-          </section>
-
-          <section className="learningHubSection">
-            <h3>10. Final Checklist</h3>
-            <ul className="learningHubChecklist">
-              <li>Contact information is complete</li>
-              <li>Summary is specific</li>
-              <li>Skills are grouped</li>
-              <li>Projects explain technologies and purpose</li>
-              <li>Education includes degree and school</li>
-              <li>Experience uses action verbs</li>
-              <li>Certifications are relevant</li>
-              <li>Resume is easy to scan</li>
-              <li>No grammar or spelling errors</li>
-              <li>Resume is tailored to the job</li>
-            </ul>
-          </section>
         </article>
 
         <div className="learningHubCTA">

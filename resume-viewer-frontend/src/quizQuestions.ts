@@ -44,12 +44,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'beginner',
     question: 'What is the main purpose of a resume?',
     options: [
-      'To introduce your skills, education, and work experience to potential employers.',
       'To provide a personal diary of your daily activities.',
       'To list every class you have ever taken in detail.',
       'To serve as a social media profile replacement.',
+      'To introduce your skills, education, and work experience to potential employers.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'A resume gives employers a concise overview of your qualifications to decide whether to interview you.',
   },
   {
@@ -58,12 +58,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'beginner',
     question: 'Where should your contact information usually appear on a resume?',
     options: [
-      'Near the top so recruiters can find it quickly.',
+      
       'Hidden at the bottom of the last page.',
       'Only in the application form, not on the resume.',
+      'Near the top so recruiters can find it quickly.',
       'In a separate document labeled "Contact Info".',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Contact details belong near the top of the resume so hiring managers can reach you without searching.',
   },
   {
@@ -86,12 +87,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'beginner',
     question: 'What tense should you use for bullets describing past roles?',
     options: [
-      'Past tense for previous roles and present tense for your current role.',
+      
       'Always future tense.',
+      'Past tense for previous roles and present tense for your current role.',
       'Always present tense for all roles.',
       'Past continuous tense only.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'Use past tense for past roles and present tense for your current position to be clear and consistent.',
   },
   {
@@ -100,12 +102,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'How should you present achievements on your resume to make them persuasive?',
     options: [
-      'Use measurable results and the impact of your actions.',
+      
       'Describe only your daily tasks without results.',
       'List responsibilities without context.',
+      'Use measurable results and the impact of your actions.',
       'Use general adjectives like "responsible for" repeatedly.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Quantified results and clear impact show employers the value you delivered in past roles.',
   },
   {
@@ -114,12 +117,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'What is a strong way to write a resume summary for job applications?',
     options: [
-      'A brief statement highlighting your top strengths and how they relate to the role.',
+      
       'A full paragraph of personal background and hobbies.',
       'A list of every software you have installed.',
       'A long narrative of your life story.',
+      'A brief statement highlighting your top strengths and how they relate to the role.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'A concise summary should present your value proposition and match the role’s needs.',
   },
   {
@@ -128,12 +132,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'When deciding which past jobs to include, what is best practice?',
     options: [
-      'Prioritize roles that are most relevant to the position you are applying for.',
+      
       'Include every job you ever had regardless of relevance.',
       'Only include jobs from the last month.',
       'Exclude any roles that involved teamwork.',
+      'Prioritize roles that are most relevant to the position you are applying for.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Focus the resume on experience that demonstrates fit for the target role, trimming unrelated history.',
   },
   {
@@ -170,12 +175,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'What is the best way to present a promotion at the same company?',
     options: [
-      'List the company once, with separate entries for each title and dates to show progression.',
+      
       'Hide the promotion and only list the latest title.',
       'Split the company across multiple resumes with different contact info.',
+      'List the company once, with separate entries for each title and dates to show progression.',
       'Remove the earlier title entirely to shorten the resume.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Showing each title with dates demonstrates career progression and increased responsibility.',
   },
   {
@@ -184,12 +190,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'How should you address a short employment gap of six months on your resume?',
     options: [
-      'Briefly explain the gap (e.g., professional training, caregiving) and highlight recent achievements.',
+      
       'Remove all dates from your resume entirely.',
       'Provide no explanation and leave a blank section.',
+      'Briefly explain the gap (e.g., professional training, caregiving) and highlight recent achievements.',
       'Fabricate employment to fill the gap.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'A concise, honest explanation combined with recent accomplishments reduces recruiter concern about gaps.',
   },
   {
@@ -198,12 +205,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'Which approach improves clarity when your role had varied responsibilities?',
     options: [
-      'Group achievements by theme or function and provide metrics for each.',
+      
       'Write one long paragraph covering everything in vague terms.',
+      'Group achievements by theme or function and provide metrics for each.',
       'List responsibilities in random order without headings.',
       'Omit most responsibilities to save space.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'Grouping by theme and providing metrics helps readers understand your strengths across varied duties.',
   },
   {
@@ -212,12 +220,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'When including education on a senior resume, what is best?',
     options: [
-      'Include degree, institution, and graduation year (optional) and emphasize relevant coursework or honors if directly relevant.',
+      
       'List all courses taken in college in detail.',
       'Place education at the top regardless of experience level.',
       'Exclude degree information entirely.',
+      'Include degree, institution, and graduation year (optional) and emphasize relevant coursework or honors if directly relevant.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Provide concise education details and highlight items that support the role when relevant.',
   },
   {
@@ -240,12 +249,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'beginner',
     question: 'If you have limited work experience, what should you include to strengthen your resume?',
     options: [
-      'Relevant academic projects, internships, volunteer work, and skills with brief outcomes.',
+      
       'Only a one-line statement saying you are new to the workforce.',
       'A long list of unrelated hobbies.',
       'No contact information to keep privacy.',
+      'Relevant academic projects, internships, volunteer work, and skills with brief outcomes.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Academic projects and internships show practical experience and can demonstrate relevant skills to employers.',
   },
   {
@@ -254,12 +264,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'How should you order bullets under each role to maximize impact?',
     options: [
-      'Place the most important, highest-impact accomplishments first.',
+      
       'Order bullets alphabetically by word.',
+      'Place the most important, highest-impact accomplishments first.',
       'Put the shortest sentences first regardless of importance.',
       'Randomize order to show variety.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'Leading with the most significant achievements makes it likely reviewers see your top contributions quickly.',
   },
   {
@@ -268,12 +279,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'beginner',
     question: 'Should you include references on your resume?',
     options: [
-      'No—references are provided separately when requested.',
+      
       'Yes—list at least five references directly on the resume.',
       'Include references only if they are family members.',
+      'No—references are provided separately when requested.',
       'List contact information for previous managers without permission.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'References are typically shared upon request rather than included on the resume itself.',
   },
   {
@@ -282,12 +294,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'What is the role of keywords in a resume?',
     options: [
-      'Keywords reflect skills and terms that match the job description and help with screening and ATS matching.',
+      
       'Keywords are decorative words that improve aesthetics.',
       'Keywords should be hidden in images.',
       'Keywords only matter for cover letters, not resumes.',
+      'Keywords reflect skills and terms that match the job description and help with screening and ATS matching.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Using relevant keywords naturally helps both ATS and human reviewers recognize fit for the role.',
   },
   {
@@ -310,12 +323,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'What is the recommended way to handle technical versus managerial experience on the same resume?',
     options: [
-      'Create distinct sections or highlight selective bullets to show both technical contributions and leadership outcomes.',
+      
       'Exclude managerial experience entirely to focus on technical skills.',
+      'Create distinct sections or highlight selective bullets to show both technical contributions and leadership outcomes.',
       'Mix everything together without structure.',
       'Use two resumes simultaneously in one file.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'Structuring sections lets you present both technical depth and managerial impact clearly for diverse roles.',
   },
   {
@@ -324,12 +338,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'Which practice helps reduce unconscious bias during initial resume screening?',
     options: [
-      'Focus on role-relevant skills and achievements and remove unnecessary personal identifiers.',
+      
       'Add a photo and personal details to stand out.',
       'Include birthdate and marital status for clarity.',
       'Use flashy colors to draw attention.',
+      'Focus on role-relevant skills and achievements and remove unnecessary personal identifiers.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Removing personal identifiers and emphasizing objective achievements helps reduce bias in screening.',
   },
 
@@ -340,12 +355,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'beginner',
     question: 'Which file type is typically recommended for online job submissions to preserve formatting and text?',
     options: [
-      'A text-based PDF or DOCX file.',
+      
       'A screenshot image such as PNG or JPG.',
+      'A text-based PDF or DOCX file.',
       'A compressed archive without preview.',
       'A PowerPoint file with animations.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'Text-based PDFs and DOCX files preserve formatting and allow ATS to read content reliably.',
   },
   {
@@ -354,12 +370,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'beginner',
     question: 'Why should you avoid placing critical text inside images on a resume?',
     options: [
-      'Images are often unreadable by ATS and may not be visible to screen readers.',
+      
       'Images always improve ATS accuracy.',
       'Images reduce file size substantially.',
+      'Images are often unreadable by ATS and may not be visible to screen readers.',
       'Images are required for ATS parsing in most systems.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Important content in images cannot be parsed by ATS and can harm accessibility for assistive technologies.',
   },
   {
@@ -368,12 +385,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'beginner',
     question: 'Which section header is standard and helps ATS identify your employment history?',
     options: [
-      'Experience',
+      
       'My Story',
       'Random Notes',
       'Personal Timeline',
+      'Experience',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Standard headers like "Experience" are commonly recognized by ATS and human reviewers.',
   },
   {
@@ -424,12 +442,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'What should you include in the filename when submitting a resume to make it clear to recruiters?',
     options: [
-      'Your full name and the word "resume" (e.g., Firstname_Lastname_Resume.pdf).',
+      
       'A generic name like "resume_final2.pdf" only.',
+      'Your full name and the word "resume" (e.g., Firstname_Lastname_Resume.pdf).',
       'A file name with non-ASCII characters only.',
       'No file name, only paste content in the body.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'A clear filename with your name helps recruiters and systems identify your document quickly.',
   },
   {
@@ -438,12 +457,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'Which resume element is most likely to be ignored by some ATS systems?',
     options: [
-      'Text contained inside headers, footers, or images.',
+      
       'Plain text in the main body.',
       'Standard section headers.',
+      'Text contained inside headers, footers, or images.',
       'Simple bullet points.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Some systems do not parse headers/footers or image text, so important details should be in the main content flow.',
   },
   {
@@ -452,12 +472,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'How should you include keywords to improve ATS matching without keyword stuffing?',
     options: [
-      'Integrate keywords naturally into accomplishment statements and skills sections.',
+      
       'Repeat the same keyword in every sentence unnaturally.',
       'Hide keywords using white text on white background.',
+      'Integrate keywords naturally into accomplishment statements and skills sections.',
       'Place keywords solely in an appendix.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Natural integration of keywords shows real experience and avoids penalties from automated checks.',
   },
   {
@@ -466,12 +487,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'What is a reliable way to verify how an ATS will read your resume?',
     options: [
-      'Use an ATS preview or parsing tool to inspect extracted text and structure.',
+      
       'Convert the resume to an image and visually inspect it only.',
+      'Use an ATS preview or parsing tool to inspect extracted text and structure.',
       'Send it to random websites without checking output.',
       'Rely entirely on formatting in a word processor preview.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'ATS preview tools show how systems extract information and reveal potential parsing issues.',
   },
   {
@@ -480,12 +502,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'When multiple roles exist under one employer, what layout helps both humans and ATS?',
     options: [
-      'List the company once and include separate entries for each title with dates and responsibilities.',
+      
       'Combine all roles into a single undifferentiated paragraph.',
       'Only list the most recent role and omit others.',
       'Use images to separate roles visually.',
+      'List the company once and include separate entries for each title with dates and responsibilities.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Separating titles with dates clarifies progression and preserves parseable structure for systems.',
   },
   {
@@ -494,12 +517,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'What is the impact of including too many fonts and styles on a resume submitted to an ATS?',
     options: [
-      'Varied fonts and styles can break rendering and make parsing less reliable.',
+      
       'Multiple fonts always improve ATS detection of skills.',
       'Different fonts reduce file compatibility positively.',
       'ATS ignores font choices entirely without consequence.',
+      'Varied fonts and styles can break rendering and make parsing less reliable.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Simple, standard fonts maintain compatibility and reduce parsing errors across systems.',
   },
   {
@@ -508,12 +532,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'Which contact information is most important to prioritize for ATS and recruiters?',
     options: [
-      'A professional email and a reachable phone number.',
+      
       'Your home mailing address only.',
       'A decorative contact badge image.',
+      'A professional email and a reachable phone number.',
       'Old contact details from college.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Email and phone are essential and should be current and professional for recruiter contact.',
   },
   {
@@ -538,12 +563,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'beginner',
     question: 'How should you describe a college project on your resume?',
     options: [
-      'State the project goal, your role, technologies used, and a measurable or demonstrable outcome.',
+      
       'Mention only the project title without context.',
       'List the course name repeatedly.',
       'Describe unrelated hobbies instead of the project.',
+      'State the project goal, your role, technologies used, and a measurable or demonstrable outcome.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Even academic projects should show what you did, tools used, and the result or learning to highlight relevance.',
   },
   {
@@ -566,12 +592,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'beginner',
     question: 'What is a useful way to show your contribution on a team project?',
     options: [
-      'Specify your role, key responsibilities, and one or two concrete achievements.',
+      
       'Claim credit for the whole project without details.',
       'List the names of teammates only.',
+      'Specify your role, key responsibilities, and one or two concrete achievements.',
       'State you contributed but provide no specifics.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Clarifying your role and measurable contributions helps employers evaluate your individual impact.',
   },
   {
@@ -580,12 +607,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'beginner',
     question: 'If a project reduced load time by 40%, how should that appear on a resume?',
     options: [
-      '"Reduced page load time by 40% by optimizing assets and caching."',
+      
       '"Worked on performance improvements."',
+      '"Reduced page load time by 40% by optimizing assets and caching."',
       '"Improved UX."',
       '"Participated in speed initiatives."',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'Providing the percentage reduction with actions taken shows clear impact and methods used.',
   },
   {
@@ -594,12 +622,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'How should you present open-source contributions on your resume?',
     options: [
-      'List the project, your contributions, links if allowed, and the impact or adoption.',
+      
       'Only state you contributed without specifics.',
       'Hide contributions under a generic skills section.',
       'List only the programming language used.',
+      'List the project, your contributions, links if allowed, and the impact or adoption.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Highlighting concrete contributions and impact helps demonstrate real-world usage and collaboration experience.',
   },
   {
@@ -608,12 +637,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'Which metric best communicates product impact for a feature you shipped?',
     options: [
-      'Metrics like increased user engagement, retention, or revenue attributed to the feature.',
+      
       'The number of meetings attended during development.',
+      'Metrics like increased user engagement, retention, or revenue attributed to the feature.',
       'A list of technologies without outcomes.',
       'Generic statements like "improved product" without data.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'Attributing measurable change to the feature clarifies its significance to the business.',
   },
   {
@@ -622,12 +652,13 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'What is the best way to describe a technical skill you use frequently?',
     options: [
-      'Show examples of how you applied it in projects and the results you achieved.',
+      
       'List the skill without context or examples.',
       'Only include it in a long unrelated paragraph.',
+      'Show examples of how you applied it in projects and the results you achieved.',
       'Mention it in a footnote.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Concrete examples show depth of use and how the skill contributed to outcomes.',
   },
   {
@@ -636,12 +667,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'How should you summarize a cross-functional project where you led engineers and designers?',
     options: [
-      'Note the scope, team size, your decisions, and measurable outcomes such as time-to-market or revenue impact.',
       'Only list the team members’ names.',
       'Focus solely on the design without business context.',
+      'Note the scope, team size, your decisions, and measurable outcomes such as time-to-market or revenue impact.',
       'Provide a vague statement about collaboration.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Context about scope and measurable results demonstrates leadership and product impact.',
   },
   {
@@ -650,12 +681,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'When describing an architecture improvement, what elements are most helpful?',
     options: [
-      'The problem addressed, the architectural change, and measurable system improvements.',
       'Only diagrams without explanation.',
+      'The problem addressed, the architectural change, and measurable system improvements.',
       'Only mention the technology names.',
       'Exclude performance outcomes.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'Explaining the problem, change, and measurable improvements communicates engineering judgment and impact.',
   },
   {
@@ -664,12 +695,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'How can you show the transferability of technical skills to non-technical roles?',
     options: [
-      'Highlight problem-solving, project management, and cross-team communication examples tied to outcomes.',
       'Only list programming languages without context.',
       'Focus on niche technical details irrelevant to the role.',
       'Omit soft skills entirely.',
+      'Highlight problem-solving, project management, and cross-team communication examples tied to outcomes.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Framing technical skills around collaboration and outcomes shows applicability across roles.',
   },
   {
@@ -692,12 +723,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'How should you choose which skills to list at the top of your resume?',
     options: [
-      'Prioritize the skills most relevant to the job description and supported by experience.',
       'List every skill you have regardless of relevance.',
       'Only include software you have never used.',
+      'Prioritize the skills most relevant to the job description and supported by experience.',
       'Include only soft skills without evidence.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Relevance and supporting experience make the skills list meaningful to the recruiter and ATS.',
   },
   {
@@ -706,12 +737,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'What should you avoid when describing the results of a project?',
     options: [
-      'Vague language without metrics or clear outcomes.',
       'Specific metrics and before/after context.',
+      'Vague language without metrics or clear outcomes.',
       'Concrete examples of your role.',
       'Clear timelines associated with results.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'Vague descriptions make it hard to assess the actual impact of your work.',
   },
 
@@ -722,12 +753,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'beginner',
     question: 'Why should you tailor your resume for a specific job application?',
     options: [
-      'To highlight the most relevant experience and keywords that match the role.',
       'To make the resume longer for all applications.',
       'To hide your true experience from recruiters.',
       'To reuse a single generic document for every job.',
+      'To highlight the most relevant experience and keywords that match the role.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Tailoring increases perceived relevance and helps both ATS and recruiters identify a good fit.',
   },
   {
@@ -750,12 +781,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'beginner',
     question: 'When submitting applications online, what should you check before sending?',
     options: [
-      'That your resume file opens correctly, contact info is current, and any links work.',
       'That the file name contains private notes.',
       'Nothing—assume the system will fix all issues.',
+      'That your resume file opens correctly, contact info is current, and any links work.',
       'That you removed all dates to avoid dating yourself.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Verifying file integrity and links reduces errors and ensures recruiters can access your materials.',
   },
   {
@@ -764,12 +795,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'beginner',
     question: 'What is an appropriate way to follow up after submitting an application if no timeline is given?',
     options: [
-      'Wait one to two weeks and send a polite email expressing continued interest.',
       'Call every day until you hear back.',
+      'Wait one to two weeks and send a polite email expressing continued interest.',
       'Show up unannounced at the office.',
       'Publicly post complaints about the company online.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'A polite follow-up after a reasonable wait shows interest without pressuring hiring teams.',
   },
   {
@@ -778,12 +809,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'How should you tailor your resume when applying to a role that emphasizes teamwork?',
     options: [
-      'Highlight collaborative projects, cross-functional work, and outcomes achieved with teams.',
       'Remove any mention of teamwork to focus on individual work only.',
       'Add fictional teams to appear collaborative.',
       'Only mention independent freelance work.',
+      'Highlight collaborative projects, cross-functional work, and outcomes achieved with teams.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Demonstrating real team accomplishments aligns your experience with the role’s collaboration requirements.',
   },
   {
@@ -806,12 +837,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'When should you disclose salary expectations in the application process?',
     options: [
-      'Share expectations when asked or during later-stage discussions; research market ranges first.',
       'Always include salary demands in the first resume you send.',
       'Never discuss salary until after one year of employment.',
+      'Share expectations when asked or during later-stage discussions; research market ranges first.',
       'Publicly list salary requirements on social media before applying.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Discuss salary at the appropriate stage with market knowledge to enable fair negotiation.',
   },
   {
@@ -820,12 +851,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'How should you prepare for behavioral interview questions that ask about past challenges?',
     options: [
-      'Use the STAR method: Situation, Task, Action, Result, and focus on clear measurable outcomes.',
       'Recite unrelated technical facts.',
+      'Use the STAR method: Situation, Task, Action, Result, and focus on clear measurable outcomes.',
       'Avoid giving examples and speak hypothetically.',
       'Answer with one-word responses.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'The STAR method gives structure to behavioral answers and highlights your contributions and impact.',
   },
   {
@@ -834,12 +865,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'What is an effective way to demonstrate cultural fit during the hiring process?',
     options: [
-      'Research the company values and give examples of how your behavior aligns with them.',
       'Ignore the company culture and focus only on technical skills.',
       'Criticize the company’s leadership during interviews.',
       'Make up stories about previous employment to impress.',
+      'Research the company values and give examples of how your behavior aligns with them.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Concrete examples that align with company values show you understand and can contribute to the culture.',
   },
   {
@@ -862,12 +893,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'How should you handle a request to provide work samples that contain proprietary client data?',
     options: [
-      'Offer redacted examples, summaries of the work, or recreated sample projects that demonstrate the skill.',
       'Provide the original proprietary files without permission.',
       'Refuse and say you have no relevant work.',
+      'Offer redacted examples, summaries of the work, or recreated sample projects that demonstrate the skill.',
       'Give unrelated personal data instead.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Redacted or recreated examples convey ability while respecting confidentiality.',
   },
   {
@@ -876,12 +907,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'What is the best practice for online professional profiles (e.g., LinkedIn) when job searching?',
     options: [
-      'Keep them current, consistent with your resume, and highlight notable achievements with clear summaries.',
       'Leave them blank to avoid visibility.',
+      'Keep them current, consistent with your resume, and highlight notable achievements with clear summaries.',
       'List every job duty without focus.',
       'Use unprofessional photos and language to stand out.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'A current and consistent online profile supports your resume and helps recruiters find you.',
   },
   {
@@ -890,12 +921,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'When receiving feedback after an interview, what is the constructive way to respond?',
     options: [
-      'Thank the interviewer, request clarification where helpful, and apply learnings to future interviews.',
       'Ignore the feedback entirely and react defensively publicly.',
       'Demand to be hired immediately.',
       'Provide unrelated criticism back to the interviewer.',
+      'Thank the interviewer, request clarification where helpful, and apply learnings to future interviews.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Graciously receiving feedback and learning from it improves future performance and relationships with recruiters.',
   },
 
@@ -920,12 +951,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'beginner',
     question: 'Which bullet best shows leadership on a resume?',
     options: [
-      'Led a team to launch a feature that increased customer retention by 12%.',
       'Attended weekly team meetings regularly.',
       'Was present in team photos.',
+      'Led a team to launch a feature that increased customer retention by 12%.',
       'Listed managerial responsibilities without results.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Specific leadership with measured outcomes clearly illustrates effective leadership.',
   },
   {
@@ -934,12 +965,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'beginner',
     question: 'How should you describe resolving a conflict on a team in an interview or resume?',
     options: [
-      'Outline the situation, the actions you took to mediate, and the positive result.',
       'Avoid mentioning the conflict entirely.',
+      'Outline the situation, the actions you took to mediate, and the positive result.',
       'Blame others without context.',
       'Provide only an opinion without actions taken.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'A concise description of actions and outcomes shows conflict resolution skills and maturity.',
   },
   {
@@ -948,12 +979,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'beginner',
     question: 'How should you highlight adaptability on a resume?',
     options: [
-      'Describe an instance where you learned a new tool quickly and delivered results.',
       'State you are adaptable without examples.',
       'List only ways you resisted change.',
       'Omit adaptable experiences to avoid attention.',
+      'Describe an instance where you learned a new tool quickly and delivered results.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Concrete examples of rapid learning and results provide credible evidence of adaptability.',
   },
   {
@@ -976,12 +1007,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'Which example best demonstrates initiative on a resume?',
     options: [
-      'Proposed and implemented a process change that reduced onboarding time by 25%.',
       'Waited for assignments and followed instructions only.',
       'Reported problems but took no action.',
+      'Proposed and implemented a process change that reduced onboarding time by 25%.',
       'Avoided suggesting improvements to prevent conflict.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Initiative is shown by proposing and executing improvements that have measurable benefits.',
   },
   {
@@ -990,12 +1021,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'What is an effective way to communicate stakeholder management experience?',
     options: [
-      'Describe how you identified stakeholders, aligned expectations, and delivered results.',
       'List stakeholders’ names without context.',
+      'Describe how you identified stakeholders, aligned expectations, and delivered results.',
       'Say you worked with stakeholders but provide no examples.',
       'Avoid discussing stakeholder interactions entirely.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'Detailing alignment and delivery shows your ability to manage stakeholder needs practically.',
   },
   {
@@ -1004,12 +1035,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'How should you summarize a cross-functional initiative that required compromise and negotiation?',
     options: [
-      'Explain the business goal, trade-offs negotiated, and the measurable outcome achieved.',
       'Only list the departments involved without outcomes.',
       'Describe the initiative with no mention of compromises.',
       'Claim the initiative failed without context.',
+      'Explain the business goal, trade-offs negotiated, and the measurable outcome achieved.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Highlighting negotiations and outcomes shows your ability to lead complex collaborative work.',
   },
   {
@@ -1032,12 +1063,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'How can you show that you improved a process on the job?',
     options: [
-      'State the baseline, the change you implemented, and the quantified improvement.',
       'Say "improved process" without numbers.',
       'Only describe the team meetings you held.',
+      'State the baseline, the change you implemented, and the quantified improvement.',
       'List process steps without results.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Providing before-and-after metrics shows the effectiveness of your process improvement.',
   },
   {
@@ -1046,12 +1077,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'What is the best way to demonstrate ethical decision-making in a professional example?',
     options: [
-      'Describe the dilemma, the principled actions you took, and the outcome that respected stakeholders.',
       'Avoid mentioning ethics to prevent controversy.',
+      'Describe the dilemma, the principled actions you took, and the outcome that respected stakeholders.',
       'Just state you always act ethically without an example.',
       'Blame others for ethical failures.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'Concrete examples of principled action and outcomes show integrity and judgment.',
   },
   {
@@ -1060,12 +1091,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'How should you present a time when you had to learn a new tool quickly?',
     options: [
-      'Explain the learning steps you took and the results you delivered using the tool.',
       'State you learned it without providing results.',
       'Mention the tool name and stop there.',
       'Say you avoided using the tool entirely.',
+      'Explain the learning steps you took and the results you delivered using the tool.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Describing how you learned and applied a tool demonstrates capacity to adapt and produce outcomes.',
   },
   {
@@ -1088,12 +1119,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'How should you present a complex negotiation where you achieved a win-win outcome?',
     options: [
-      'Describe the objectives of each party, the compromise reached, and the measurable benefit to both sides.',
       'Claim victory without acknowledging trade-offs.',
       'Only describe your demands.',
+      'Describe the objectives of each party, the compromise reached, and the measurable benefit to both sides.',
       'Omit any mention of negotiation details.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Explaining trade-offs and benefits shows your ability to negotiate strategically and create value.',
   },
   {
@@ -1102,12 +1133,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'What details should you include when describing a major product pivot you led?',
     options: [
-      'Context for the pivot, reasoning, stakeholder alignment actions, and measurable post-pivot results.',
       'Only the announcement date without strategic details.',
+      'Context for the pivot, reasoning, stakeholder alignment actions, and measurable post-pivot results.',
       'List the names of team members but no outcomes.',
       'Provide a vague statement that a pivot occurred.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'Context, decisions, and outcomes demonstrate leadership in navigating major strategic changes.',
   },
   {
@@ -1116,12 +1147,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'Which example best shows you can scale a process across teams?',
     options: [
-      'Describe the pilot, the standardization steps, and the metrics showing successful adoption across teams.',
       'State you like scaling processes without examples.',
       'List the pilot activities only without results.',
       'Say you prefer to keep processes small and manual.',
+      'Describe the pilot, the standardization steps, and the metrics showing successful adoption across teams.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Showing pilot to rollout metrics demonstrates ability to scale effective practices across organizations.',
   },
   {
@@ -1144,12 +1175,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'Which action demonstrates effective time management on a resume?',
     options: [
-      'Prioritized tasks, set milestones, and met deadlines while maintaining quality.',
       'Ignored deadlines and worked at leisure.',
       'Only described meetings attended without output.',
+      'Prioritized tasks, set milestones, and met deadlines while maintaining quality.',
       'Reported random work hours without outcomes.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 2,
     explanation: 'Concrete time management practices tied to outcomes show reliability and execution ability.',
   },
   {
@@ -1158,12 +1189,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'intermediate',
     question: 'What is an appropriate way to present mentoring experience?',
     options: [
-      'Describe the number of mentees, skills developed, and measurable improvements where possible.',
       'Say you mentored without providing any details.',
+      'Describe the number of mentees, skills developed, and measurable improvements where possible.',
       'List only the mentees’ names.',
       'Mention mentoring as a hobby unrelated to work.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 1,
     explanation: 'Quantifying mentoring outcomes demonstrates the scope and effectiveness of your coaching.',
   },
   {
@@ -1172,12 +1203,12 @@ export const RESUME_QUIZ_QUESTIONS: ResumeQuizQuestion[] = [
     difficulty: 'advanced',
     question: 'How should you document a cross-border collaboration to show global competency?',
     options: [
-      'Note the regions involved, coordination mechanisms, and business results achieved across locations.',
       'Mention only local tasks without context.',
       'List time zones without describing coordination.',
       'Omit any mention of global factors.',
+      'Note the regions involved, coordination mechanisms, and business results achieved across locations.',
     ],
-    correctOptionIndex: 0,
+    correctOptionIndex: 3,
     explanation: 'Detailing coordination and outcomes demonstrates capability to work effectively across geographies.',
   },
   {

@@ -3,6 +3,10 @@ import { analyzeResume, generateCoverLetter, evaluateInterviewAnswer, generateIn
 import type { AnalyzeResponse, InterviewEvaluationResponse, InterviewQuestionsResponse } from './api/types'
 import { QUIZ_CATEGORIES, QUIZ_DIFFICULTIES, getQuizQuestions, type QuizCategory, type QuizDifficulty, type ResumeQuizQuestion } from './quizQuestions'
 import ResumeSections from './resume-section'
+import ATSGuide from './atsguide'
+import ProjectSkill from './projectskill'
+import FreshGraduate from './freshgraduate'
+import InterviewTips from './interviewtips'
 
 function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n))
@@ -377,7 +381,7 @@ export default function App() {
 
   function getResumeKnowledgeRating(score: number, total: number) {
     const percent = total ? (score / total) * 100 : 0
-    if (percent >= 90) return 'Expert'
+    if (percent >= 90) return 'Expert' 
     if (percent >= 75) return 'Strong'
     if (percent >= 50) return 'Developing'
     return 'Needs improvement'
@@ -751,7 +755,7 @@ export default function App() {
             onClick={() => switchMode('learningHub')}
           >
             <span className="sidebarIcon">📚</span>
-            <span className="sidebarItemText">Resume Learning Hub</span>
+            <span className="sidebarItemText">Learning Hub</span>
           </button>
         </nav>
 
@@ -1490,7 +1494,7 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
 
               {!resumeQuizStarted ? (
                 <div className="resumeQuizSetupStack">
-                  <div className="card resumeQuizSetupCard">
+                  <div className="">
                     <div className="muted2">Select a category</div>
                     <div className="resumeQuizChoiceGrid resumeQuizChoiceGrid--categories">
                       {QUIZ_CATEGORIES.map((category) => {
@@ -1513,7 +1517,7 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
                     </div>
                   </div>
 
-                  <div className="card resumeQuizSetupCard">
+                  <div className="">
                     <div className="muted2">Select a difficulty</div>
                     <div className="resumeQuizChoiceGrid resumeQuizChoiceGrid--difficulty">
                       {QUIZ_DIFFICULTIES.map((difficulty) => {
@@ -1588,7 +1592,7 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
                   </div>
 
                   {resumeQuizSubmitted ? (
-                    <div className="card resumeQuizResultsCard">
+                    <div className="">
                       <div className="resumeQuizResultsHeader">
                         <div>
                           <div className="muted2">Your score</div>
@@ -1655,7 +1659,37 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
                 onBack={() => setLearningHubLesson(null)}
                 onOpenAnalyzer={() => switchMode('analyzer')}
               />
-            ) : (
+            ) : 
+
+            learningHubLesson === 'ats-guide' ? (
+              <ATSGuide
+                onBack={() => setLearningHubLesson(null)}
+                onOpenAnalyzer={() => switchMode('analyzer')}
+              />
+            ) : 
+
+            learningHubLesson === 'projects-skills' ? (
+              <ProjectSkill
+                onBack={() => setLearningHubLesson(null)}
+                onOpenAnalyzer={() => switchMode('analyzer')}
+              />
+            ) :   
+            
+            learningHubLesson === 'fresh-graduate' ? (
+              <FreshGraduate
+                onBack={() => setLearningHubLesson(null)}
+                onOpenAnalyzer={() => switchMode('analyzer')}
+              />
+            ) :
+            
+            learningHubLesson === 'interview-tips' ? (
+              <InterviewTips
+                onBack={() => setLearningHubLesson(null)}
+                onOpenAnalyzer={() => switchMode('analyzer')}
+              />
+            ) :
+            
+            (
               <div className="card" style={{ maxWidth: 1400, margin: '0 auto', padding: 24 }}>
                 <button
                   type="button"
@@ -1683,7 +1717,7 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
             )
           ) : (
             <div style={{ maxWidth: 1400, margin: '0 auto' }}>
-              <div className="card" style={{ padding: 24 }}>
+              <div className="cardedu" style={{ padding: 24 }}>
                 <div className="cardTitle">📚 Resume Learning Hub</div>
                 <div className="muted2" style={{ marginBottom: 18, maxWidth: 760 }}>
                   Learn the fundamentals of creating professional resumes and preparing for your career through structured learning guides.
@@ -1702,7 +1736,7 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
                         className="buttonSmall"
                         onClick={() => setLearningHubLesson(category.key)}
                       >
-                        Learn More →
+                        Learn More
                       </button>
                     </div>
                   ))}
