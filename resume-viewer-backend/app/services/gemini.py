@@ -10,10 +10,6 @@ load_dotenv()
 
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-print(os.getenv("GEMINI_API_KEY"))
-
-
-
 def _extract_pdf_text(uploaded_pdf) -> str:
     raw = uploaded_pdf.file.read()
     if not raw:
@@ -61,7 +57,7 @@ User message:
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-2.5-flash-lite",
             contents=prompt,
         )
     except Exception as e:
@@ -104,7 +100,7 @@ Resume:
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",   # or keep 2.5-flash if you want
+            model="gemini-2.5-flash-lite",   # or keep 2.5-flash if you want
             contents=prompt,
     )
     except Exception as e:
@@ -149,7 +145,7 @@ Resume:
 """
 
     response = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-flash-lite",
         contents=prompt,
     )
 
@@ -212,7 +208,7 @@ Candidate Answer:
 """
 
     response = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-flash-lite",
         contents=prompt,
     )
 
@@ -266,7 +262,7 @@ Resume:
 """
 
     response = client.models.generate_content(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-flash-lite",
         contents=prompt,
     )
 
