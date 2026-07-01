@@ -310,19 +310,6 @@ This project showcases:
 
 ---
 
-# 💡 Future Improvements
-
-- User Authentication
-- Resume History
-- Resume Version Comparison
-- Dark / Light Theme Toggle
-- Export to DOCX
-- Multi-language Support
-- Additional Resume Templates
-- User Dashboard
-
----
-
 # 👨‍💻 Developer
 
 **Jonel Bryan T. Ablog**
