@@ -64,7 +64,7 @@ User message:
         )
     except Exception as e:
         return {
-            "reply": f"I’m having trouble responding right now. Please try again in a moment. ({str(e)})"
+            "reply": f"🤖 Gemini AI is currently experiencing high demand. Your request successfully reached the AI service, but it is temporarily unavailable. Please wait a few moments and try again. If the issue persists, the free Gemini quota or service may be temporarily busy.({str(e)})"
         }
 
     text = response.text.strip()
