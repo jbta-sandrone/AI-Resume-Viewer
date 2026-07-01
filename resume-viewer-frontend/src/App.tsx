@@ -173,6 +173,7 @@ export default function App() {
   const analyzerInputRef = useRef<HTMLInputElement | null>(null)
   const coverLetterInputRef = useRef<HTMLInputElement | null>(null)
   const chatInputRef = useRef<HTMLInputElement | null>(null)
+  const chatTextareaRef = useRef<HTMLTextAreaElement | null>(null)
 
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<AnalyzeResponse | null>(null)
@@ -314,6 +315,18 @@ export default function App() {
     setChatError(null)
     setChatLoading(false)
     resetFileInput(chatInputRef)
+    if (chatTextareaRef.current) {
+      chatTextareaRef.current.style.height = 'auto'
+    }
+  }
+
+  function handleChatTextareaChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    setChatInput(e.target.value)
+    if (chatTextareaRef.current) {
+      chatTextareaRef.current.style.height = 'auto'
+      const newHeight = Math.min(chatTextareaRef.current.scrollHeight, 220)
+      chatTextareaRef.current.style.height = newHeight + 'px'
+    }
   }
 
   function resetResumeQuiz() {
@@ -815,7 +828,7 @@ export default function App() {
 
         {activeMode === 'chat' ? (
           <div className="grid columns2" style={{ marginTop: 0, gap: 16 }}>
-            <div className="card" style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', minHeight: 620 }}>
+            <div className="card" style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', minHeight: 620, maxWidth: '1150px', margin: '0 auto' }}>
               <div className="cardTitle">🤖 AI Resume Chat</div>
               <div className="muted2" style={{ marginBottom: 14 }}>
                 Ask for resume advice, ATS help, cover letters, interview prep, and career guidance. You can chat with or without uploading a resume.
@@ -935,32 +948,42 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
 
               <div className="rewriteActions" style={{ marginTop: 12, flexWrap: 'wrap' }}>
                 <div style={{ position: 'relative', flex: 1, minWidth: 220 }}>
-                  <input
+                  <textarea
+                    ref={chatTextareaRef}
                     className="input"
                     value={chatInput}
-                    onChange={(e) => setChatInput(e.target.value)}
+                    onChange={handleChatTextareaChange}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault()
                         void sendChatMessage()
                       }
                     }}
-                    placeholder="Ask anything about your resume, career, or job search..."
+                    placeholder="Ask about resume advice..."
                     disabled={chatLoading}
-                    style={{ padding: 14 }}
+                    style={{
+                      padding: '14px 38px 14px 14px',
+                      minHeight: 30,
+                      maxHeight: 220,
+                      overflowY: 'auto',
+                      resize: 'none',
+                      fontFamily: 'inherit',
+                      fontSize: 'inherit',
+                      lineHeight: 1.5,
+                    }}
                   />
                   <button
                     type="button"
-                    className="buttonSmall"
+                    className="sendbutton"
                     onClick={() => void sendChatMessage()}
                     disabled={chatLoading || !chatInput.trim()}
-                    style={{ position: 'absolute', right: 8, maxWidth: '50px', top: '50%', transform: 'translateY(-50%)', padding: '4px 10px', color: '#fff', background: 'var(--primary)', border: 'none', fontSize: 16 }}
+                    //style={{position: 'absolute', right: 20, bottom: 18, padding: '10px 15px', fontSize: 11}}
                     aria-label="Send message"
                   >
-                    {chatLoading ? '…' : '➔'}
+                    {chatLoading ? '…' : '➤'}
                   </button>
                 </div>
-                <button className="buttonSmall" type="button" onClick={clearChatState} disabled={chatLoading}>
+                <button className="buttonSmall" style={{maxHeight: '40px'}} type="button" onClick={clearChatState} disabled={chatLoading}>
                   Clear Chat
                 </button>
               </div>
