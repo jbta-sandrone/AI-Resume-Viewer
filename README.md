@@ -190,16 +190,16 @@ Designed with clean, easy-to-read articles to help users continuously improve th
 # 📂 Project Structure
 
 ```text
-Nelume/
+AI-Resume-Viewer/
 
-├── frontend/
+├── resume-viewer-frontend/
 │   ├── src/
 │   ├── assets/
 │   ├── components/
 │   ├── styles/
 │   └── ...
 │
-├── backend/
+├── resume-viewer-backend/
 │   ├── app/
 │   ├── routes/
 │   ├── services/
