@@ -1,144 +1,209 @@
 # 🚀 NelWorks
 
-### AI Career Assistant
+> **An AI-powered Career Assistant that helps students, fresh graduates, and job seekers build stronger resumes, prepare for interviews, and increase their confidence throughout the job application process.**
 
-**NelWorks** is an AI-powered Career Assistant designed to help job seekers build stronger resumes, generate professional cover letters, prepare for interviews, and receive personalized career guidance using **Google Gemini AI**.
-
-Built to showcase modern **Full-Stack Development**, **AI Integration**, **Prompt Engineering**, and **REST API Development**.
-
----
-
-## ✨ Features
-
-### 💬 AI Resume Chat
-
-A conversational AI assistant dedicated to resume and career guidance.
-
-* Resume and career-related conversations
-* Works with or without an uploaded resume
-* Personalized advice using uploaded resume context
-* ATS optimization guidance
-* Resume improvement suggestions
-* Interview preparation tips
-* Copy message functionality
-* Modern chat interface
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
+![Google Gemini](https://img.shields.io/badge/Google-Gemini_AI-4285F4)
+![License](https://img.shields.io/badge/License-MIT-green)
 
 ---
 
-### 📄 Resume Analyzer
+# 📖 About
 
-Analyze your resume and receive detailed ATS insights.
+NelWorks is an AI-powered career platform that combines resume analysis, resume rewriting, cover letter generation, interview preparation, interactive learning resources, and career guidance into one modern web application.
 
-* ATS Score
-* Resume Match Score
-* Matched Skills
-* Missing Skills
-* Grammar Suggestions
-* Stronger Wording Suggestions
-* ATS Signals
-* Resume Summary
+Designed for students, fresh graduates, and professionals, NelWorks provides practical tools that help users create ATS-friendly resumes, improve job application materials, prepare for interviews, and continuously develop their career knowledge.
+
+This project demonstrates modern **Full-Stack Web Development**, **REST API Development**, **AI Integration**, and **Prompt Engineering** using **Google Gemini AI**.
 
 ---
 
-### ✍️ Resume Rewrite
+# ✨ Features
 
-Generate a professional ATS-friendly version of your resume.
+## 🤖 AI Resume Chat
 
-* AI Resume Rewrite
-* Improvement Suggestions
-* Regenerate Rewrite
-* Copy Rewrite
-* Download as PDF
+An AI-powered assistant focused on resumes, careers, and job applications.
 
----
+### Features
 
-### 📨 Cover Letter Generator
-
-Generate personalized cover letters based on your resume and target job.
-
-* Position-based generation
-* Company-specific customization
-* ATS-friendly writing
-* Regenerate
-* Copy
-* Download as PDF
+- Resume-related conversations
+- Career guidance
+- ATS optimization advice
+- Resume improvement suggestions
+- Interview preparation tips
+- Personalized responses using uploaded resumes
+- Copy chat messages
+- Modern conversational interface
 
 ---
 
-### 🎤 AI Interview Questions
+## 📄 Resume Analyzer
 
-Generate personalized interview questions from your resume.
+Upload your resume and receive a detailed AI-powered analysis.
 
-Categories include:
+### Analysis Includes
 
-* Technical Questions
-* Behavioral Questions
-* Project Questions
-* Problem Solving
-* HR Questions
-
-Each question includes an AI-generated sample answer.
-
----
-
-### 🎯 Interactive Mock Interview
-
-Practice interviews with real-time AI feedback.
-
-Features include:
-
-* One question at a time
-* AI Evaluation
-* Score
-* Strengths
-* Weaknesses
-* Suggestions
-* Better Sample Answer
-* Interview Summary
+- ATS Compatibility Score
+- Resume Match Score
+- Resume Strengths
+- Areas for Improvement
+- Missing Skills
+- Keyword Analysis
+- Grammar Suggestions
+- Resume Summary
 
 ---
 
-## 🛠 Tech Stack
+## ✍️ AI Resume Rewrite
 
-### Frontend
+Generate a stronger, more professional version of your resume.
 
-* React
-* TypeScript
-* Vite
-* CSS
+### Features
 
-### Backend
-
-* FastAPI
-* Python
-
-### Artificial Intelligence
-
-* Google Gemini API
-* Prompt Engineering
-
-### Libraries
-
-* pdfplumber
-* google-genai
-* python-dotenv
+- ATS-friendly rewriting
+- Improved wording suggestions
+- Professional formatting
+- Regenerate rewrite
+- Copy to clipboard
+- Export as PDF
 
 ---
 
-## 📁 Project Structure
+## 📨 Cover Letter Generator
+
+Generate personalized cover letters for your target job.
+
+### Features
+
+- Position-specific cover letters
+- Company customization
+- ATS-friendly writing
+- Regenerate
+- Copy to clipboard
+- Export as PDF
+
+---
+
+## 🎤 AI Interview Questions
+
+Generate interview questions tailored to your uploaded resume.
+
+### Includes
+
+- Technical Questions
+- Behavioral Questions
+- HR Questions
+- Project-based Questions
+- Problem-solving Questions
+
+Each question also includes an AI-generated sample answer to help users prepare effectively.
+
+---
+
+## 🎯 Interactive Mock Interview
+
+Practice interviews with AI-generated questions and receive detailed feedback.
+
+### Features
+
+- One question at a time
+- AI evaluation
+- Interview score
+- Strengths
+- Weaknesses
+- Improvement suggestions
+- Sample answer
+- Interview summary
+
+---
+
+## 🧠 Resume Quiz
+
+An interactive learning feature designed to improve resume knowledge.
+
+### Features
+
+- Multiple categories
+- Beginner, Intermediate, and Advanced difficulty
+- Instant scoring
+- Resume knowledge rating
+- Detailed explanations
+- Randomized questions
+
+### Categories
+
+- Resume Basics
+- ATS & Formatting
+- Projects & Skills
+- Job Applications
+- Situational Scenarios
+- Mixed Quiz
+
+---
+
+## 📚 Resume Learning Hub
+
+A built-in documentation-style learning center that teaches resume writing and career preparation.
+
+### Topics
+
+- Resume Sections
+- ATS Guide
+- Projects & Skills
+- Fresh Graduate Guide
+- Interview Tips
+
+Designed with clean, easy-to-read articles to help users continuously improve their career knowledge.
+
+---
+
+# 🛠 Tech Stack
+
+## Frontend
+
+- React
+- TypeScript
+- Vite
+- CSS3
+
+## Backend
+
+- Python
+- FastAPI
+
+## Artificial Intelligence
+
+- Google Gemini API
+- Prompt Engineering
+
+## Libraries
+
+- pdfplumber
+- google-genai
+- python-dotenv
+
+---
+
+# 📂 Project Structure
 
 ```text
 NelWorks/
 
 ├── frontend/
 │   ├── src/
-│   ├── public/
+│   ├── assets/
+│   ├── components/
+│   ├── styles/
 │   └── ...
 │
 ├── backend/
 │   ├── app/
 │   ├── routes/
 │   ├── services/
+│   ├── prompts/
 │   └── ...
 │
 └── README.md
@@ -146,19 +211,19 @@ NelWorks/
 
 ---
 
-## 🚀 Getting Started
+# 🚀 Getting Started
 
-### Clone the Repository
+## Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/nelworks.git
+git clone https://github.com/yourusername/NelWorks.git
 
-cd nelworks
+cd NelWorks
 ```
 
 ---
 
-### Frontend
+## Frontend
 
 ```bash
 cd frontend
@@ -170,12 +235,12 @@ npm run dev
 
 ---
 
-### Backend
+## Backend
 
 Create a virtual environment
 
 ```bash
-python -m venv venv
+python -m venv .venv
 ```
 
 Activate the environment
@@ -183,7 +248,7 @@ Activate the environment
 Windows
 
 ```bash
-venv\Scripts\activate
+.venv\Scripts\activate
 ```
 
 Install dependencies
@@ -192,7 +257,7 @@ Install dependencies
 pip install -r requirements.txt
 ```
 
-Run the backend
+Run the server
 
 ```bash
 uvicorn app.main:app --reload
@@ -200,7 +265,7 @@ uvicorn app.main:app --reload
 
 ---
 
-## 🔑 Environment Variables
+# 🔑 Environment Variables
 
 Create a `.env` file inside the backend directory.
 
@@ -210,50 +275,70 @@ GEMINI_API_KEY=YOUR_GEMINI_API_KEY
 
 ---
 
-## 📷 Screenshots
+# 📸 Screenshots
 
-Coming Soon
+*(Coming Soon)*
 
-* AI Resume Chat
-* Resume Analyzer
-* Resume Rewrite
-* Cover Letter Generator
-* AI Interview Questions
-* Interactive Mock Interview
+- Home Page
+- AI Resume Chat
+- Resume Analyzer
+- Resume Rewrite
+- Cover Letter Generator
+- AI Interview Questions
+- Interactive Mock Interview
+- Resume Quiz
+- Resume Learning Hub
 
 ---
 
-## 🎯 Purpose
+# 🎯 Learning Objectives
 
-NelWorks was developed to demonstrate modern AI-powered Full-Stack web development by combining Large Language Models with practical career tools.
+NelWorks was developed to demonstrate practical modern software development by combining Artificial Intelligence with real-world career tools.
 
 This project showcases:
 
-* Full-Stack Development
-* REST API Development
-* AI Integration
-* Prompt Engineering
-* PDF Processing
-* State Management
-* Responsive User Interface
-* Modern UI/UX Design
+- Full-Stack Web Development
+- REST API Development
+- AI Integration
+- Prompt Engineering
+- PDF Processing
+- Resume Parsing
+- State Management
+- Responsive Design
+- Component-Based Architecture
+- Modern UI/UX Design
 
 ---
 
-## 👨‍💻 Developer
+# 💡 Future Improvements
+
+- User Authentication
+- Resume History
+- Resume Version Comparison
+- Dark / Light Theme Toggle
+- Export to DOCX
+- Multi-language Support
+- Additional Resume Templates
+- User Dashboard
+
+---
+
+# 👨‍💻 Developer
 
 **Jonel Bryan T. Ablog**
 
 Bachelor of Science in Information Technology
 
-Passionate about Full-Stack Development, Artificial Intelligence, and building software that solves real-world problems.
+Aspiring Full-Stack Developer passionate about Artificial Intelligence, modern web development, and building software that solves real-world problems.
 
 ---
 
-## ⭐ Support
+# ⭐ Support
 
-If you found this project helpful or interesting, consider giving it a ⭐ on GitHub.
+If you found **NelWorks** useful or interesting, consider giving this repository a ⭐ on GitHub.
 
+It helps support the project and encourages future improvements.
 
-_Note: This project uses the Google Gemini API. AI features may be temporarily unavailable if the free API quota has been reached._
+---
 
+> **Note:** NelWorks uses the Google Gemini API. AI-powered features depend on API availability and may be temporarily unavailable due to API quota limits or temporary service demand.
