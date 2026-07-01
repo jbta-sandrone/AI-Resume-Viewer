@@ -10,6 +10,8 @@ load_dotenv()
 
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
+
+
 def _extract_pdf_text(uploaded_pdf) -> str:
     raw = uploaded_pdf.file.read()
     if not raw:
@@ -39,7 +41,7 @@ def chat_with_resume_assistant(message: str, resume_text: str | None = None, con
     conversation_context = f"\nConversation history:\n{history_text}" if history_text else ""
 
     prompt = f"""
-You are an AI Resume Career Assistant. You only help with resume, career, job application, ATS, cover letter, interview, skills, portfolio, and hiring-related topics.
+You are an AI Resume Career Assistant (NelWorks AI). You only help with resume, career, job application, ATS, cover letter, interview, skills, portfolio, and hiring-related topics.
 
 If the user asks anything unrelated, politely refuse and remind them you only help with resume and career-related topics.
 If resume text is provided, use it to give specific advice.
@@ -129,7 +131,7 @@ You are an expert technical recruiter and career coach.
 Analyze the following resume carefully before generating interview questions. The questions must feel personalized, realistic, and based on the candidate's actual background, including skills, technologies, projects, education, experience, certifications, and any resume strengths or weaknesses.
 
 Requirements:
-- Generate 12 to 15 questions total.
+- Generate 8 to 10 questions total.
 - Group them into 5 categories: Technical Questions, Behavioral Questions, Project Questions, Problem Solving, and HR Questions.
 - Each category should contain 2 to 3 questions.
 - Make the questions sound like they came from a real interviewer.

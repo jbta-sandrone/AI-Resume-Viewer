@@ -874,7 +874,7 @@ export default function App() {
                           lineHeight: 1.55,
                         }}
                       >
-                        Hi! I’m your AI Resume Assistant.
+                        Hi! I am NelWorks AI.
 
 I can help you improve your resume, make it ATS-friendly, rewrite your summary or projects, suggest missing skills, prepare for interviews, and guide you through job applications.
 
@@ -898,7 +898,7 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
                             style={{
                               padding: '12px 14px',
                               borderRadius: 16,
-                              background: message.role === 'user' ? '#F6E8C3' : '#FFFFFF',
+                              background: message.role === 'user' ? 'var(--primary-light)' : 'var(--surface)',
                               border: message.role === 'user' ? '1px solid rgba(200,155,60,0.4)' : '1px solid #E5E7EB',
                               color: '#111827',
                               boxShadow: '0 1px 3px rgba(15,23,42,0.06)',
