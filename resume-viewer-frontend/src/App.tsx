@@ -858,7 +858,7 @@ export default function App() {
                 ))}
               </div>
 
-              <div style={{ flex: 1, border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 14, background: 'rgba(255,255,255,0.03)', display: 'flex', flexDirection: 'column', gap: 10, overflow: 'hidden' }}>
+              <div style={{ flex: 1, border: '1px solid #E5E7EB', borderRadius: 16, padding: 14, background: '#F8FAFC', display: 'flex', flexDirection: 'column', gap: 10, overflow: 'hidden' }}>
                 <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {chatMessages.length === 0 && !chatLoading ? (
                     <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
@@ -867,8 +867,9 @@ export default function App() {
                           maxWidth: '82%',
                           padding: '12px 14px',
                           borderRadius: 16,
-                          background: 'rgba(255,255,255,0.07)',
-                          border: '1px solid rgba(255,255,255,0.08)',
+                          background: '#FFFFFF',
+                          border: '1px solid #E5E7EB',
+                          boxShadow: '0 1px 3px rgba(15,23,42,0.06)',
                           whiteSpace: 'pre-wrap',
                           lineHeight: 1.55,
                         }}
@@ -897,8 +898,10 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
                             style={{
                               padding: '12px 14px',
                               borderRadius: 16,
-                              background: message.role === 'user' ? 'linear-gradient(135deg, rgba(34,211,238,0.24), rgba(124,58,237,0.22))' : 'rgba(255,255,255,0.07)',
-                              border: message.role === 'user' ? '1px solid rgba(34,211,238,0.18)' : '1px solid rgba(255,255,255,0.08)',
+                              background: message.role === 'user' ? '#F6E8C3' : '#FFFFFF',
+                              border: message.role === 'user' ? '1px solid rgba(200,155,60,0.4)' : '1px solid #E5E7EB',
+                              color: '#111827',
+                              boxShadow: '0 1px 3px rgba(15,23,42,0.06)',
                               whiteSpace: 'pre-wrap',
                               lineHeight: 1.55,
                             }}
@@ -920,7 +923,7 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
 
                   {chatLoading ? (
                     <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                      <div style={{ padding: '12px 14px', borderRadius: 16, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                      <div style={{ padding: '12px 14px', borderRadius: 16, background: '#FFFFFF', border: '1px solid #E5E7EB', boxShadow: '0 1px 3px rgba(15,23,42,0.06)' }}>
                         <div className="muted2">Thinking…</div>
                       </div>
                     </div>
@@ -951,7 +954,7 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
                     className="buttonSmall"
                     onClick={() => void sendChatMessage()}
                     disabled={chatLoading || !chatInput.trim()}
-                    style={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)', padding: '2px 10px', color: 'black', background: 'white', fontSize: 18 }}
+                    style={{ position: 'absolute', right: 8, maxWidth: '50px', top: '50%', transform: 'translateY(-50%)', padding: '4px 10px', color: '#fff', background: 'var(--primary)', border: 'none', fontSize: 16 }}
                     aria-label="Send message"
                   >
                     {chatLoading ? '…' : '➔'}
@@ -1053,7 +1056,7 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
                               r={radius}
                               strokeWidth="10"
                               fill="none"
-                              stroke="rgba(11, 241, 245, 0.95)"
+                              stroke="#C89B3C"
                               strokeDasharray={circumference}
                               strokeDashoffset={dashOffset}
                               style={{ transformOrigin: '54px 54px' }}
@@ -1182,8 +1185,8 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
                             className="chipSkill"
                             key={p.text}
                             style={{
-                              borderColor: 'rgba(248, 113, 113, 0.75)',
-                              background: 'linear-gradient(135deg, rgba(248, 113, 113, 0.18), rgba(124,58,237,0.04))',
+                              borderColor: 'rgba(239, 68, 68, 0.35)',
+                              background: 'rgba(239, 68, 68, 0.07)',
                             }}
                           >
                             {p.text}
@@ -1367,7 +1370,7 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
                           return (
                             <div
                               key={questionKey}
-                              style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(255,255,255,0.08)' }}
+                              style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid #E5E7EB' }}
                             >
                               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginBottom: 6 }}>
                                 <div style={{ fontWeight: 700, flex: 1 }}>
@@ -1404,7 +1407,7 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
                   </div>
 
                   <div className="section" style={{ marginTop: 18 }}>
-                    <div className="card" style={{ padding: 16, background: 'rgba(255,255,255,0.04)' }}>
+                    <div className="card" style={{ padding: 16, background: '#F8FAFC' }}>
                       <div style={{ fontWeight: 700, marginBottom: 8 }}>Mock Interview Practice</div>
                       <div className="muted2" style={{ marginBottom: 10 }}>
                         Answer one question at a time and receive AI feedback, strengths, weaknesses, and a stronger sample answer.
@@ -1424,7 +1427,7 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
                         Review your overall performance and the strongest themes to improve.
                       </div>
 
-                      <div className="card" style={{ background: 'rgba(255,255,255,0.04)', padding: 16 }}>
+                      <div className="card" style={{ background: '#F8FAFC', padding: 16 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
                           <div>
                             <div className="muted2">Overall average score</div>
@@ -1469,7 +1472,7 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
                     </div>
                   ) : mockInterviewStarted && !mockInterviewModalOpen ? (
                     <div className="section" style={{ marginTop: 18 }}>
-                      <div className="card" style={{ padding: 16, background: 'rgba(255,255,255,0.04)' }}>
+                      <div className="card" style={{ padding: 16, background: '#F8FAFC' }}>
                         <div style={{ fontWeight: 700, marginBottom: 8 }}>Mock interview practice is ready</div>
                         <div className="muted2" style={{ marginBottom: 10 }}>
                           Continue your interview practice in a focused modal view.
@@ -1879,7 +1882,7 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
 
       {activeMode === 'analyzer' && mockInterviewModalOpen && mockInterviewStarted ? (
         <div
-          style={{ position: 'fixed', inset: 0, background: 'rgba(2, 6, 23, 0.7)', backdropFilter: 'blur(6px)', zIndex: 1200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.45)', backdropFilter: 'blur(6px)', zIndex: 1200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
           onClick={() => setMockInterviewModalOpen(false)}
         >
           <div
@@ -1905,7 +1908,7 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
                   Review your overall performance and the strongest themes to improve.
                 </div>
 
-                <div className="card" style={{ background: 'rgba(255,255,255,0.04)', padding: 16 }}>
+                <div className="card" style={{ background: '#F8FAFC', padding: 16 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
                     <div>
                       <div className="muted2">Overall average score</div>
@@ -1973,7 +1976,7 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
                 </div>
 
                 {mockInterviewEvaluation ? (
-                  <div className="card" style={{ marginTop: 16, padding: 16, background: 'rgba(255,255,255,0.04)' }}>
+                  <div className="card" style={{ marginTop: 16, padding: 16, background: '#F8FAFC' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                       <div>
                         <div className="muted2">Score</div>

@@ -23,6 +23,8 @@ export default function ProjectSkill({ onBack, onOpenAnalyzer }: ResumeSectionsP
                     </div>
                 </header>
 
+                <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
+
                 <article className="learningHubArticleBody">
                     <section className="learningHubSection">
                         <h3>💼 Why Projects and Skills Matter?</h3>
@@ -34,7 +36,7 @@ export default function ProjectSkill({ onBack, onOpenAnalyzer }: ResumeSectionsP
                         </p>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>1. Writing Strong Projects</h3>
@@ -48,7 +50,7 @@ export default function ProjectSkill({ onBack, onOpenAnalyzer }: ResumeSectionsP
                         </ul>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>2. Recommended Project Format</h3>
@@ -73,7 +75,7 @@ export default function ProjectSkill({ onBack, onOpenAnalyzer }: ResumeSectionsP
                         </div>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>3. Technical Skills</h3>
@@ -129,7 +131,7 @@ export default function ProjectSkill({ onBack, onOpenAnalyzer }: ResumeSectionsP
 
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>4. Soft Skills</h3>
@@ -146,7 +148,7 @@ export default function ProjectSkill({ onBack, onOpenAnalyzer }: ResumeSectionsP
                         </ul>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>5. Common Mistakes</h3>
@@ -160,7 +162,7 @@ export default function ProjectSkill({ onBack, onOpenAnalyzer }: ResumeSectionsP
                         </ul>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>6. Choosing the Right Projects</h3>
@@ -179,7 +181,7 @@ export default function ProjectSkill({ onBack, onOpenAnalyzer }: ResumeSectionsP
                         </div>
                     </section>  
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>               
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)', marginTop: '28px' }}></hr>               
 
                     <section className="learningHubSection">
                         <h3>💡 Pro Tip</h3>

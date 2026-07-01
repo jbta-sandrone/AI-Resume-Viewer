@@ -23,6 +23,8 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
           </div>
         </header>
 
+        <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
+
         <article className="learningHubArticleBody">
           <section className="learningHubSection">
             <h3>1. Contact Information</h3>
@@ -46,7 +48,7 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
             <p className="learningHubNote">Common mistakes include an unprofessional email, missing phone details, broken links, or too much personal information.</p>
           </section>
 
-          <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+          <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
           <section className="learningHubSection">
             <h3>2. Professional Summary</h3>
@@ -71,7 +73,7 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
             </ul>
           </section>
 
-          <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+          <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
           <section className="learningHubSection">
             <h3>3. Skills</h3>
@@ -92,7 +94,7 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
             </ul>
           </section>
 
-          <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+          <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
           <section className="learningHubSection">
             <h3>4. Projects</h3>
@@ -129,7 +131,7 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
             </ul>
           </section>
 
-          <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+          <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
           <section className="learningHubSection">
             <h3>5. Education</h3>
@@ -152,7 +154,7 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
             </ul>
           </section>
 
-          <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+          <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
           <section className="learningHubSection">
             <h3>6. Experience / Internship / OJT</h3>
@@ -173,7 +175,7 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
             </ul>
           </section>
 
-          <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+          <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
           <section className="learningHubSection">
             <h3>7. Certifications and Seminars</h3>
@@ -194,7 +196,7 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
             </ul>
           </section>
 
-          <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+          <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
           <section className="learningHubSection">
             <h3>8. Awards and Achievements</h3>
@@ -209,6 +211,8 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
           </section>
 
         </article>
+
+        <hr style={{ border: '1px solid rgb(179, 175, 175)', marginTop: '28px' }}></hr>
 
         <div className="learningHubCTA">
           <h3>Ready to check your resume?</h3>

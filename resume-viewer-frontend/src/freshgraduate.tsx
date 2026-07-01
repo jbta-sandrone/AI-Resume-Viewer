@@ -23,6 +23,8 @@ export default function FreshGraduate({ onBack, onOpenAnalyzer }: ResumeSections
                     </div>
                 </header>
 
+                <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
+
                 <article className="learningHubArticleBody">
 
                     <section className="learningHubSection">
@@ -32,7 +34,7 @@ export default function FreshGraduate({ onBack, onOpenAnalyzer }: ResumeSections
                         </p>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>1. Build a Strong Resume</h3>
@@ -49,7 +51,7 @@ export default function FreshGraduate({ onBack, onOpenAnalyzer }: ResumeSections
                         </ul>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>2. You Don't Need Work Experience</h3>
@@ -72,7 +74,7 @@ export default function FreshGraduate({ onBack, onOpenAnalyzer }: ResumeSections
                         </div>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>3. Build Personal Projects</h3>
@@ -95,7 +97,7 @@ export default function FreshGraduate({ onBack, onOpenAnalyzer }: ResumeSections
                         </div>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>4. Build Your Portfolio</h3>
@@ -113,7 +115,7 @@ export default function FreshGraduate({ onBack, onOpenAnalyzer }: ResumeSections
                         </ul>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>5. Continue Learning</h3>
@@ -136,7 +138,7 @@ export default function FreshGraduate({ onBack, onOpenAnalyzer }: ResumeSections
                         </div>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>6. Prepare for Interviews</h3>
@@ -154,7 +156,7 @@ export default function FreshGraduate({ onBack, onOpenAnalyzer }: ResumeSections
                         </ul>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>7. Common Mistakes</h3>
@@ -169,6 +171,8 @@ export default function FreshGraduate({ onBack, onOpenAnalyzer }: ResumeSections
                         </ul>
                     </section>
 
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
+
 
                     <section className="learningHubSection">
                         <h3>💡 Final Advice</h3>
@@ -177,6 +181,8 @@ export default function FreshGraduate({ onBack, onOpenAnalyzer }: ResumeSections
                             Every experienced developer started as a beginner. Employers are not looking for someone who knows everything—they're looking for someone who is willing to learn, solve problems, and grow. Focus on building projects, improving your skills, and continuously learning. Small improvements made consistently will have a big impact on your career.
                         </p>
                     </section>
+
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                 </article>
 

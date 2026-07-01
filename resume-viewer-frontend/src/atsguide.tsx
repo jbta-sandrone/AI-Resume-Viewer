@@ -23,6 +23,8 @@ export default function ATSGuide({ onBack, onOpenAnalyzer }: ResumeSectionsProps
           </div>
         </header>
 
+        <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
+
         <article className="learningHubArticleBody">
           <section className="learningHubSection">
             <h3>🔎 What is an ATS?</h3>
@@ -30,7 +32,7 @@ export default function ATSGuide({ onBack, onOpenAnalyzer }: ResumeSectionsProps
             <p>An ATS is software used by companies to organize, scan, and filter job applications before a recruiter reviews them. Instead of reading every resume manually, many employers first let the ATS search for relevant keywords, skills, job titles, education, and experience. This means a well-qualified candidate can still be rejected if the resume is poorly formatted or difficult for the ATS to read. ATS does not think like a human recruiter. It simply looks for relevant information that matches the job posting.</p>
           </section>
 
-          <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+          <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
           <section className="learningHubSection">
             <h3>1. ATS-Friendly Resume Tips</h3>
@@ -59,7 +61,7 @@ export default function ATSGuide({ onBack, onOpenAnalyzer }: ResumeSectionsProps
 
           </section>
 
-          <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+          <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
         <section className="learningHubSection">
             <h3>2. Keep Your Layout Simple</h3>
@@ -90,7 +92,7 @@ export default function ATSGuide({ onBack, onOpenAnalyzer }: ResumeSectionsProps
 
         </section>
 
-        <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+        <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
         <section className="learningHubSection">
             <h3>3. Use Relevant Keywords</h3>
@@ -113,7 +115,7 @@ export default function ATSGuide({ onBack, onOpenAnalyzer }: ResumeSectionsProps
             
         </section>
 
-        <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+        <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
 
         <section className="learningHubSection">
@@ -137,7 +139,7 @@ export default function ATSGuide({ onBack, onOpenAnalyzer }: ResumeSectionsProps
             
         </section>
 
-        <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+        <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
 
         <section className="learningHubSection">
@@ -157,7 +159,7 @@ export default function ATSGuide({ onBack, onOpenAnalyzer }: ResumeSectionsProps
             
         </section>
 
-        <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+        <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
 
         <section className="learningHubSection">
@@ -180,7 +182,7 @@ export default function ATSGuide({ onBack, onOpenAnalyzer }: ResumeSectionsProps
 
         </section>
 
-        <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+        <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                 <section className="learningHubSection">
             <h3>7. ATS Do's and Don'ts</h3>
@@ -214,6 +216,8 @@ export default function ATSGuide({ onBack, onOpenAnalyzer }: ResumeSectionsProps
         </section>
 
         </article>
+
+        <hr style={{ border: '1px solid rgb(179, 175, 175)', marginTop: '28px' }}></hr>
 
         <div className="learningHubCTA">
           <h3>Ready to check your resume?</h3>

@@ -23,6 +23,8 @@ export default function InterviewTips({ onBack, onOpenAnalyzer }: ResumeSections
                     </div>
                 </header>
 
+                <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
+
                 <article className="learningHubArticleBody">
 
                     <section className="learningHubSection">
@@ -32,7 +34,7 @@ export default function InterviewTips({ onBack, onOpenAnalyzer }: ResumeSections
                         </p>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>1. Before the Interview</h3>
@@ -48,7 +50,7 @@ export default function InterviewTips({ onBack, onOpenAnalyzer }: ResumeSections
                         </ul>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>2. Common Interview Questions</h3>
@@ -68,7 +70,7 @@ export default function InterviewTips({ onBack, onOpenAnalyzer }: ResumeSections
                         </div>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>3. Answer Using the STAR Method</h3>
@@ -98,7 +100,7 @@ export default function InterviewTips({ onBack, onOpenAnalyzer }: ResumeSections
                         </div>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>4. Technical Interviews</h3>
@@ -116,7 +118,7 @@ export default function InterviewTips({ onBack, onOpenAnalyzer }: ResumeSections
                         </ul>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>5. Professional Communication</h3>
@@ -134,7 +136,7 @@ export default function InterviewTips({ onBack, onOpenAnalyzer }: ResumeSections
                         </ul>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>6. Common Interview Mistakes</h3>
@@ -149,7 +151,7 @@ export default function InterviewTips({ onBack, onOpenAnalyzer }: ResumeSections
                         </ul>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>7. Questions You Can Ask the Interviewer</h3>
@@ -166,7 +168,7 @@ export default function InterviewTips({ onBack, onOpenAnalyzer }: ResumeSections
                         </div>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                     <section className="learningHubSection">
                         <h3>8. Virtual Interview Tips</h3>
@@ -180,7 +182,7 @@ export default function InterviewTips({ onBack, onOpenAnalyzer }: ResumeSections
                         </ul>
                     </section>
 
-                    <hr style={{ border: '1px solid rgba(245, 158, 11, 0.18)' }}></hr>                  
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>                  
 
                     <section className="learningHubSection">
                         <h3>💡 Final Advice</h3>
@@ -189,6 +191,8 @@ export default function InterviewTips({ onBack, onOpenAnalyzer }: ResumeSections
                             Interviewers do not expect fresh graduates to know everything. They value honesty, curiosity, problem-solving, and a willingness to learn. If you don't know an answer, explain how you would approach the problem instead of guessing. Confidence comes from preparation, so practice your answers, review your projects, and believe in the effort you've put into building your skills.
                         </p>
                     </section>
+
+                    <hr style={{ border: '1px solid rgb(179, 175, 175)' }}></hr>
 
                 </article>
 
