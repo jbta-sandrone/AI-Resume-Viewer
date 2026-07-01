@@ -938,6 +938,7 @@ You can upload a resume for personalized feedback, or just ask a resume-related 
                     <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
                       <div style={{ padding: '12px 14px', borderRadius: 16, background: '#FFFFFF', border: '1px solid #E5E7EB', boxShadow: '0 1px 3px rgba(15,23,42,0.06)' }}>
                         <div className="muted2">Thinking…</div>
+                        <div className="muted2">Understanding...</div>
                       </div>
                     </div>
                   ) : null}
