@@ -707,7 +707,7 @@ export default function App() {
       <aside className={`sidebar ${mobileMenuOpen ? 'mobileOpen' : ''}`} aria-label="Resume tools">
         <div className="sidebarTop">
           <div className="sidebarLogo">
-            <span className="sidebarLogoText">NW</span>
+            <img src="/images/NelWorks-logo.png" alt="NelWorks logo" />
           </div>
           <div className="sidebarTitle">NelWorks</div>
         </div>
