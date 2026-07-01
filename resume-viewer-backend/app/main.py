@@ -9,12 +9,10 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "http://localhost:5174",
         "http://localhost:3000",
-        "http://26.24.192.137:5174",
-        "http://192.168.100.36:5174",
+        "https://nelworks.vercel.app",
     ],
-    allow_credentials=False,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
