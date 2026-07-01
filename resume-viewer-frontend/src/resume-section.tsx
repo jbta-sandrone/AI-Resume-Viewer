@@ -112,7 +112,7 @@ export default function ResumeSections({ onBack, onOpenAnalyzer }: ResumeSection
             </div>
             <div className="learningHubExampleBox">
               <strong>Good example:</strong>
-              <div>NelWorks – AI Career Assistant</div>
+              <div>Nelume – AI Career Assistant</div>
               <div>React, TypeScript, FastAPI, Gemini API</div>
               <div>
                 Built an AI-powered career assistant that analyzes resumes, rewrites resume content, generates cover letters, creates interview questions, and provides resume learning tools.

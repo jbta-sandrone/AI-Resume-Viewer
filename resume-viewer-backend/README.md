@@ -1,8 +1,8 @@
-# 🚀 NelWorks
+# 🚀 Nelume
 
 ### AI Career Assistant
 
-**NelWorks** is an AI-powered Career Assistant designed to help job seekers build stronger resumes, generate professional cover letters, prepare for interviews, and receive personalized career guidance using **Google Gemini AI**.
+**Nelume** is an AI-powered Career Assistant designed to help job seekers build stronger resumes, generate professional cover letters, prepare for interviews, and receive personalized career guidance using **Google Gemini AI**.
 
 Built to showcase modern **Full-Stack Development**, **AI Integration**, **Prompt Engineering**, and **REST API Development**.
 
@@ -128,7 +128,7 @@ Features include:
 ## 📁 Project Structure
 
 ```text
-NelWorks/
+AI-Resume-Viewer/
 
 ├── frontend/
 │   ├── src/
@@ -151,9 +151,9 @@ NelWorks/
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/nelworks.git
+git clone https://github.com/jbta-sandrone/AI-Resume-Viewer.git
 
-cd nelworks
+cd AI-Resume-Viewer
 ```
 
 ---
@@ -225,7 +225,7 @@ Coming Soon
 
 ## 🎯 Purpose
 
-NelWorks was developed to demonstrate modern AI-powered Full-Stack web development by combining Large Language Models with practical career tools.
+Nelume was developed to demonstrate modern AI-powered Full-Stack web development by combining Large Language Models with practical career tools.
 
 This project showcases:
 

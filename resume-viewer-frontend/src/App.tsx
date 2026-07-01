@@ -707,9 +707,9 @@ export default function App() {
       <aside className={`sidebar ${mobileMenuOpen ? 'mobileOpen' : ''}`} aria-label="Resume tools">
         <div className="sidebarTop">
           <div className="sidebarLogo">
-            <img src="/images/NelWorks-logo.png" alt="NelWorks logo" />
+            <img src="/images/Nelume-logo.png" alt="Nelume logo" />
           </div>
-          <div className="sidebarTitle">NelWorks</div>
+          <div className="sidebarTitle">Nelume</div>
         </div>
 
         <nav className="sidebarNav">
@@ -769,7 +769,7 @@ export default function App() {
           <div className="brand">
             <div className="" />
             <div className="titleWrap">
-              <h1>NelWorks - AI Career Assistant</h1>
+              <h1>Nelume - AI Career Assistant</h1>
               <p className="subtitle">
                 {activeMode === 'chat'
                   ? 'Chat with an AI assistant for resume, career, ATS, cover letter, and interview guidance.'
@@ -874,7 +874,7 @@ export default function App() {
                           lineHeight: 1.55,
                         }}
                       >
-                        Hi! I am NelWorks AI.
+                        Hi! I am Nelume AI.
 
 I can help you improve your resume, make it ATS-friendly, rewrite your summary or projects, suggest missing skills, prepare for interviews, and guide you through job applications.
 

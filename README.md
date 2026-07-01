@@ -1,4 +1,4 @@
-# 🚀 NelWorks
+# 🚀 Nelume
 
 > **An AI-powered Career Assistant that helps students, fresh graduates, and job seekers build stronger resumes, prepare for interviews, and increase their confidence throughout the job application process.**
 
@@ -13,9 +13,9 @@
 
 # 📖 About
 
-NelWorks is an AI-powered career platform that combines resume analysis, resume rewriting, cover letter generation, interview preparation, interactive learning resources, and career guidance into one modern web application.
+Nelume is an AI-powered career platform that combines resume analysis, resume rewriting, cover letter generation, interview preparation, interactive learning resources, and career guidance into one modern web application.
 
-Designed for students, fresh graduates, and professionals, NelWorks provides practical tools that help users create ATS-friendly resumes, improve job application materials, prepare for interviews, and continuously develop their career knowledge.
+Designed for students, fresh graduates, and professionals, Nelume provides practical tools that help users create ATS-friendly resumes, improve job application materials, prepare for interviews, and continuously develop their career knowledge.
 
 This project demonstrates modern **Full-Stack Web Development**, **REST API Development**, **AI Integration**, and **Prompt Engineering** using **Google Gemini AI**.
 
@@ -190,7 +190,7 @@ Designed with clean, easy-to-read articles to help users continuously improve th
 # 📂 Project Structure
 
 ```text
-NelWorks/
+Nelume/
 
 ├── frontend/
 │   ├── src/
@@ -216,9 +216,9 @@ NelWorks/
 ## Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/NelWorks.git
+git clone https://github.com/jbta-sandrone/AI-Resume-Viewer.git
 
-cd NelWorks
+cd AI-Resume-Viewer
 ```
 
 ---
@@ -293,7 +293,7 @@ GEMINI_API_KEY=YOUR_GEMINI_API_KEY
 
 # 🎯 Learning Objectives
 
-NelWorks was developed to demonstrate practical modern software development by combining Artificial Intelligence with real-world career tools.
+Nelume was developed to demonstrate practical modern software development by combining Artificial Intelligence with real-world career tools.
 
 This project showcases:
 
@@ -322,10 +322,10 @@ Aspiring Full-Stack Developer passionate about Artificial Intelligence, modern w
 
 # ⭐ Support
 
-If you found **NelWorks** useful or interesting, consider giving this repository a ⭐ on GitHub.
+If you found **Nelume** useful or interesting, consider giving this repository a ⭐ on GitHub.
 
 It helps support the project and encourages future improvements.
 
 ---
 
-> **Note:** NelWorks uses the Google Gemini API. AI-powered features depend on API availability and may be temporarily unavailable due to API quota limits or temporary service demand.
+> **Note:** Nelume uses the Google Gemini API. AI-powered features depend on API availability and may be temporarily unavailable due to API quota limits or temporary service demand.

@@ -67,7 +67,7 @@ export default function ProjectSkill({ onBack, onOpenAnalyzer }: ResumeSectionsP
 
                         <div className="learningHubExampleBox">
                             <strong>Example Layout:</strong>
-                            <div>Project Name: NelWorks - AI Career Assistant</div>
+                            <div>Project Name: Nelume - AI Career Assistant</div>
                             <div>Technologies Used: React, TypeScript, Python, FastAPI, Gemini API</div>
                             <div>Description: An AI-powered career assistant designed to help users navigate their professional development journey.</div>
                             <div>Key Features: Resume Analysis, Resume Rewrite, Cover Letter Generator, Interview Question, Resume Quiz, Resume Learning Hub</div>
